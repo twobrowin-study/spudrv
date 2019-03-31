@@ -80,7 +80,7 @@ int create_gsid(u32 gsid[GSID_WEIGHT])
 /* Get structure number from local SPU memory by GSID */
 int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
 {
-  u8 i;
+  u8 i, j;
 
   /* Try to find GSID in SPU local memory */
   for(i=0; i<SPU_STR_NUM; i++)
@@ -88,11 +88,27 @@ int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
     if(GSID_EQUAL(gsid, gsids_in_spu[i]))
     {
       LOG_DEBUG("Found GSID:" GSID_FORMAT "at SPU memory position %d", GSID_VAR(gsids_in_spu[i]), SPU_STR(i));
-      return SPU_STR(i);
+      break;
     }
   }
 
-  // Try was unsuccess
-  LOG_DEBUG("Did not found GSID" GSID_FORMAT "in SPU memory", GSID_VAR(gsid));
-  return -ENOKEY;
+  /* Try was unsuccess */
+  if (i == SPU_STR_NUM)
+  {
+    LOG_DEBUG("Did not found GSID" GSID_FORMAT "in SPU memory", GSID_VAR(gsid));
+    return -ENOKEY;
+  }
+
+  /* In case commad is delete structure - deleting GSID from memory */
+  if(cmd == DELS)
+  {
+    /* Clear this GSID */
+    for(j=0; j<GSID_WEIGHT; j++)
+    {
+      gsids_in_spu[i][j] = 0;
+    }
+    LOG_DEBUG("Delete GSID" GSID_FORMAT "from SPU memory", GSID_VAR(gsid));
+  }
+
+  return SPU_STR(i);
 }

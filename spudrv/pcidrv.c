@@ -310,7 +310,7 @@ static inline void clear_spu_strs(void)
 {
   u8 i;
 
-  for(i=0; i<STRUCTURES; i++)
+  for(i=0; i<SPU_STR_NUM; i++)
   {
     // Clear structure
     pci_single_write(CMD_SHIFT(DELS) | i, CMD_REG);

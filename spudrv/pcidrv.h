@@ -81,7 +81,6 @@
 #define   SYS2SPU_QOVF_INT_CLR    8
 
 /* SPU architecture constants  */
-#define STRUCTURES         7                      // All of structures
 #define STURCTURE_NUM      3                      // Log2(Number of all structures in SPU + zero structure)
 #define CMD_SHIFT(cmd)     (cmd<<3*STURCTURE_NUM) // Shift of command itself in command register
 #define STR_A_SHIFT(cmd)   (cmd<<2*STURCTURE_NUM) // Shift of structure A in AND, OR, NOT, LS, LSEQ, GR, GREQ
