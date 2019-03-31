@@ -47,6 +47,7 @@ static irqreturn_t pci_driver_irq_handler(int irq, void *pdev);
 /* Internal functions */
 static int read_device_config(struct pci_dev *pdev);
 static void pci_release_device(struct pci_dev *pdev);
+static void clear_spu_strs(void);
 
 /* IDs of supported PCI devices */
 static struct pci_device_id pci_driver_ids[] =
@@ -238,6 +239,10 @@ static int pci_driver_probe(struct pci_dev *pdev, const struct pci_device_id *en
   LOG_DEBUG("Current state is 0x%08x:0x%08x", ioread32(pci_iomem + REG_ADDR(STATE_REG_0)),
                                               ioread32(pci_iomem + REG_ADDR(STATE_REG_1)));
 
+  /* Clear SPU structures */
+  clear_spu_strs();
+  LOG_DEBUG("Clear all SPU structures");
+
   return 0;
 }
 
@@ -298,4 +303,16 @@ static irqreturn_t pci_driver_irq_handler(int irq, void *pdev)
 {
   LOG_DEBUG("IRQ happened");
   return 0;
+}
+
+/* Clear all SPU structures */
+static inline void clear_spu_strs(void)
+{
+  u8 i;
+
+  for(i=0; i<STRUCTURES; i++)
+  {
+    // Clear structure
+    pci_single_write(CMD_SHIFT(DELS) | i, CMD_REG);
+  }
 }

@@ -23,7 +23,8 @@
 
 /* Macros to switch across command formats */
 #define CASE_CMDFRMT_1 case INS
-#define CASE_CMDFRMT_2 case DEL:\
+#define CASE_CMDFRMT_2 case SRCH:\
+                       case DEL:\
                        case NEXT:\
                        case PREV:\
                        case NSM:\

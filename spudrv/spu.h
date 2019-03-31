@@ -116,7 +116,7 @@ struct cmdfrmt_1
   u32 val[SPU_WEIGHT];
 };
 
-/* Command format 2 - DEL, NEXT, PREV, NSM, NGR */
+/* Command format 2 - SRCH, DEL, NEXT, PREV, NSM, NGR */
 struct cmdfrmt_2
 {
   u8 cmd;
