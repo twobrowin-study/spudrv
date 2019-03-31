@@ -43,7 +43,7 @@
 #define   STATE_REG_0  0x24
 #define   STATE_REG_1  0x25
 
-/* State 0 registers bits */
+/* State 0 register bits */
 #define   SPU_READY_FLAG          0
 #define   SPU_ERROR_FLAG          1
 #define   SPU_ERROR_Q_FLAG        2
@@ -51,7 +51,7 @@
 #define   DDR_TEST_SUCC_FLAG      4
 #define   SYS2SPU_Q_FULL_FLAG     5
 
-/* State 1 registers bits */
+/* State 1 register bits */
 #define   PCI2SYS_Q_EMP_FLAG      0
 #define   PCI2SYS_Q_FULL_FLAG     1
 #define   SPU2CPU_Q_EMP_FLAG      2
@@ -61,7 +61,7 @@
 #define   SPU2CPU_DRDY_INT_FLAG   6
 #define   SYS2SPU_QOVF_INT_FLAG   7
 
-/* Control 0 registers bits */
+/* Control 0 register bits */
 #define   ALLOW_MISD_FLAG         0
 #define   SUSPEND_Q_FLAG          1
 #define   LSM_DMA_FLAG            2
@@ -70,7 +70,7 @@
 #define   SPU2CPU_DRDY_INT_EN     5
 #define   SYS2SPU_QOVF_INT_EN     6
 
-/* Control 1 registers bits */
+/* Control 1 register bits */
 #define   RESET_SPU_FLAG          0
 #define   RESET_PCI_Q_FLAG        1
 #define   RESET_SPU2CPU_Q_FLAG    2

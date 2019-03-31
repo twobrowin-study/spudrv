@@ -35,19 +35,19 @@ static size_t alloc_rslt(const void **res_buf, u8 cmd);
 static void adds(const void *res_buf);
 static int init_burst_w(struct pci_burst *pci_burst, u8 cmd, const void *cmd_buf);
 static int init_burst_r(struct pci_burst *pci_burst, u8 cmd);
+static int poll_spu(u8 reg, u8 shift);
 static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf);
 
 /* Commands execution in command workflow */
 size_t execute_cmd(const void *cmd_buf, const void **res_buf)
 {
-  u8 poll_delay = 0;
   size_t rslt_size = 0;
   struct pci_burst pci_burst_w, pci_burst_r;
 
   /* Set up command number from format 0 */
   u8 cmd = CMDFRMT_0(cmd_buf)->cmd;
   u8 pure_cmd = cmd&CMD_MASK;
-  LOG_DEBUG("Executing command 0x%02x with flag Q %d and flag R %d", pure_cmd, GET_Q_FLAG(cmd), GET_R_FLAG(cmd));
+  LOG_DEBUG("Executing command 0x%02x with flag Q %d and flag R %d", pure_cmd, GET_Q_FLAG(cmd), GET_R_FLAG(cmd)); 
 
   /* Allocate result structure */
   rslt_size = alloc_rslt(res_buf, pure_cmd);
@@ -74,15 +74,37 @@ size_t execute_cmd(const void *cmd_buf, const void **res_buf)
   }
   LOG_DEBUG("PCI burst structures initialized");
 
-  /* Execute command and poll SPU ready state */
-  pci_burst_write(&pci_burst_w);
-  do
+  /* Poll SPU queue ready flag if queuing and no queue reset */
+  if((GET_Q_FLAG(cmd) == 1) && (GET_R_FLAG(cmd) == 0))
   {
-    LOG_DEBUG("Polling command execution end");
-    for (poll_delay=0; poll_delay<0xff; poll_delay++);
+    LOG_DEBUG("Polling SPU queue ready state");
+    if(poll_spu(STATE_REG_1, SYS2SPU_Q_EMP_FLAG) != 0)
+    {
+      LOG_ERROR("SPU queue is not ready for operation");
+      return -ENOEXEC;
+    }
+    LOG_DEBUG("SPU queue is ready for operation");
   }
-  while ( (pci_single_read(STATE_REG_0) & (1<<SPU_READY_FLAG)) == 0 );
-  LOG_DEBUG("SPU complete command execution");
+
+  /* Poll SPU ready for next operation */
+  if(poll_spu(STATE_REG_0, SPU_READY_FLAG) != 0)
+  {
+    LOG_ERROR("SPU is not ready for operation");
+    return -ENOEXEC;
+  }
+  LOG_DEBUG("SPU is ready for operation");
+
+  /* Execute command */
+  LOG_DEBUG("Starting operation execution");
+  pci_burst_write(&pci_burst_w);
+
+  /* Poll execution end */
+  if(poll_spu(STATE_REG_0, SPU_READY_FLAG) != 0)
+  {
+    LOG_ERROR("SPU can not finish operation");
+    return -ENOEXEC;
+  }
+  LOG_DEBUG("SPU finish operation");
 
   /* Read results */
   pci_burst_read(&pci_burst_r);
@@ -439,6 +461,26 @@ static int init_burst_r(struct pci_burst *pci_burst, u8 cmd)
       return -ENOMEM;
   }
 
+  return 0;
+}
+
+/* Poll untill SPU is ready or there is no more attempts */
+static inline int poll_spu(u8 reg, u8 shift)
+{
+  u8 poll_delay, poll_attempts = 255;
+  do
+  {
+    for (poll_delay=0; poll_delay<0xff; poll_delay++);
+    if(poll_attempts == 0)
+    {
+      // Error return
+      return -ENOEXEC;
+    }
+    poll_attempts--;
+  }
+  while ( (pci_single_read(reg) & (1<<shift)) == 0 );
+
+  // Success
   return 0;
 }
 

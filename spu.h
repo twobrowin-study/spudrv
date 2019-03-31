@@ -94,12 +94,12 @@ enum cmd_mask
   CMD_MASK = 0x9f // Command mask without any flag
 }; /* cmd_mask */
 
-/* SPU results enumerator */
-enum rslt
+/* SPU result error enumerator */
+enum rslt_err
 {
   OK  = 0x00,
-  ERR = 0x01
-}; /* enum rslt */
+  ERR = 0x02
+}; /* enum rslt_err */
 
 /* Command format 0 - ADDS */
 struct cmdfrmt_0
