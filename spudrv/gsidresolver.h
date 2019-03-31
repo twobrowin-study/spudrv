@@ -32,5 +32,8 @@ int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd);
     (a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3])
 #endif
 
+/* Acting SPU structure number macro */
+#define SPU_STR(i) (i+1)
+
 
 #endif /* GSIDRESOLVER_H */

@@ -67,8 +67,8 @@ int create_gsid(u32 gsid[GSID_WEIGHT])
     if(*gsids_in_spu[i] == 0) // Check if GSID is zero (actually just first 32 bits)
     {
       memcpy(gsids_in_spu[i], gsid, GSID_WEIGHT*sizeof(u32));
-      LOG_DEBUG("Add GSID:" GSID_FORMAT "to SPU memory position %d", GSID_VAR(gsids_in_spu[i]), i);
-      return;
+      LOG_DEBUG("Add GSID:" GSID_FORMAT "to SPU memory position %d", GSID_VAR(gsids_in_spu[i]), SPU_STR(i));
+      return 0;
     }
   }
 
@@ -87,8 +87,8 @@ int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
   {
     if(GSID_EQUAL(gsid, gsids_in_spu[i]))
     {
-      LOG_DEBUG("Found GSID:" GSID_FORMAT "at SPU memory position %d", GSID_VAR(gsids_in_spu[i]), i);
-      return i + 1; // Acting SPU structures starts with number 1
+      LOG_DEBUG("Found GSID:" GSID_FORMAT "at SPU memory position %d", GSID_VAR(gsids_in_spu[i]), SPU_STR(i));
+      return SPU_STR(i);
     }
   }
 
