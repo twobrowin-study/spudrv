@@ -1,0 +1,11 @@
+# Author : Dubrovin Egor <dubrovin.en@ya.ru>
+# Git Ignore for an obj files and builds
+*.o
+*.o.*
+*.ko
+*.ko.*
+*.mod.*
+*modules.order
+*Module.symvers
+*test04
+*.tmp_versions
