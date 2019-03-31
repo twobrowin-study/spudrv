@@ -84,8 +84,8 @@ enum cmd_flag
 /* SPU command flags shifts */
 enum cmd_flag_shift
 {
-  Q_FLAG_SHIFT = 4,  // Add to queue flag
-  R_FLAG_SHIFT = 5,  // Reset queue flag
+  Q_FLAG_SHIFT = 5,  // Add to queue flag
+  R_FLAG_SHIFT = 6,  // Reset queue flag
 }; /* cmd_flag_shift */
 
 /* SPU command mask */
