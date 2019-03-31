@@ -26,7 +26,8 @@
 #define DEVICE_ID 0x0020
 
 /* SPU inside address shift */
-#define   ADDR_SHIFT  2
+#define   ADDR_SHIFT     2
+#define   REG_ADDR(reg)  (reg<<ADDR_SHIFT)
 
 /* Read/Write registers */
 #define   KEY_REG  0x00

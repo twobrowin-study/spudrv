@@ -100,8 +100,8 @@ u8 pci_get_revision(void)
 /* Single PCI device memory write */
 inline void pci_single_write(u32 data, u32 addr_shift)
 {
-  LOG_DEBUG("Writing value 0x%08x to address 0x%02x", data, addr_shift);
-  iowrite32(data, pci_iomem + (addr_shift<<ADDR_SHIFT));
+  LOG_DEBUG("Writing value 0x%08x to address 0x%02x", data, REG_ADDR(addr_shift));
+  iowrite32(data, pci_iomem + REG_ADDR(addr_shift));
 }
 
 /* Single PCI device memory read */
@@ -110,8 +110,8 @@ inline u32 pci_single_read(u32 addr_shift)
   u32 data;
 
   /* Reading */
-  data = ioread32(pci_iomem + (addr_shift<<ADDR_SHIFT));
-  LOG_DEBUG("Read value 0x%08x from address 0x%02x", data, addr_shift);
+  data = ioread32(pci_iomem + REG_ADDR(addr_shift));
+  LOG_DEBUG("Read value 0x%08x from address 0x%02x", data, REG_ADDR(addr_shift));
 
   return data;
 }
@@ -225,18 +225,18 @@ static int pci_driver_probe(struct pci_dev *pdev, const struct pci_device_id *en
                (1<<RESET_TSC_FLAG) | (1<<RESET_SPU_IP_FLAG) | (1<<SPU2CPU_DRDY_INT_CLR) |
                (1<<SYS2SPU_QOVF_INT_CLR);
   LOG_DEBUG("Reseting SPU and queues with CNTL_REG_1 = 0x%08x to address 0x%02x", cntl_reg_1, CNTL_REG_1);
-  iowrite32(cntl_reg_1, pci_iomem + (CNTL_REG_1<<ADDR_SHIFT));
+  iowrite32(cntl_reg_1, pci_iomem + REG_ADDR(CNTL_REG_1));
   LOG_DEBUG("Reset SPU and queues");
 
   /* Init SPU */
   cntl_reg_0 = (1<<SPU2CPU_DRDY_INT_EN) | (1<<SYS2SPU_QOVF_INT_EN);
   LOG_DEBUG("Intalizing SPU with CNTL_REG_0 = 0x%08x to address 0x%02x", cntl_reg_0, CNTL_REG_0);
-  iowrite32(cntl_reg_0, pci_iomem + (CNTL_REG_0<<ADDR_SHIFT));
+  iowrite32(cntl_reg_0, pci_iomem + REG_ADDR(CNTL_REG_0));
   LOG_DEBUG("Initialize SPU");
 
   /* Get SPU current state registers */
-  LOG_DEBUG("Current state is 0x%08x:0x%08x", ioread32(pci_iomem + (STATE_REG_0<<ADDR_SHIFT)),
-                                              ioread32(pci_iomem + (STATE_REG_1<<ADDR_SHIFT)));
+  LOG_DEBUG("Current state is 0x%08x:0x%08x", ioread32(pci_iomem + REG_ADDR(STATE_REG_0)),
+                                              ioread32(pci_iomem + REG_ADDR(STATE_REG_1)));
 
   return 0;
 }
