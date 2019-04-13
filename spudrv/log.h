@@ -56,12 +56,4 @@
 #endif /* DEBUG */
 #endif /* LOG_DEBUG */
 
-/* Macro to print structure GSID */
-/* Only GSID_WEIGHT = 4 supports */
-#if GSID_WEIGHT == 4
-  #define GSID_FORMAT " %08x-%08x-%08x-%08x "
-  #define GSID_VAR(var) \
-    var[0], var[1], var[2], var[3]
-#endif
-
 #endif /* LOG_H */

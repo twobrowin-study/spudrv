@@ -22,7 +22,6 @@
 #define INFO_H
 
 #define DRIVER_NAME        "spudrv"
-#define DRIVER_CDEV_NAME   "spu"
 #define DRIVER_VERSION     "3.0"
 #define DRIVER_VERSION_NUM 0x30
 #define DRIVER_AUTHOR      "Dubrovin Egor <dubrovin.en@ya.ru>, Alex Popov <alexpopov@bmsru.ru>"

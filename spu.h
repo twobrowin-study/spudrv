@@ -31,6 +31,10 @@ namespace SPU
 typedef unsigned int  u32;
 typedef unsigned char u8;
 
+
+/* Macro to get right SPU Character Device name */
+#define SPU_CDEV_NAME   "spu"
+
 /* Macros of unsigned int's in one SPU data/key unit */
 #ifdef SPU32
     #define SPU_WEIGHT 1
@@ -48,13 +52,21 @@ typedef unsigned char u8;
 // Global Structure IDentifier weight in 32-bit words
 #define GSID_WEIGHT 4
 
+/* Macro to print structure GSID */
+/* Only GSID_WEIGHT = 4 supports */
+#if GSID_WEIGHT == 4
+  #define GSID_FORMAT " %08x-%08x-%08x-%08x "
+  #define GSID_VAR(var) \
+    var[0], var[1], var[2], var[3]
+#endif
+
 // Number of structures in SPU memory
 #define SPU_STR_NUM 7
 
 /* SPU commands enumerator */
 enum cmd
 {
-  ADDS = 0x80, // Register new structure special command (not from SPU)
+  ADDS = 0x00, // Register new structure special command (not from SPU)
   DEL  = 0x01, // Delete key-value pair
   INS  = 0x02, // Insert key-value pair
   MIN  = 0x03, // Minimum (first) key-value pair by key
@@ -77,21 +89,24 @@ enum cmd
 /* SPU command flags */
 enum cmd_flag
 {
-  Q_FLAG = 0x20,  // Add to queue flag
-  R_FLAG = 0x40,  // Reset queue flag
+  Q_FLAG = 0x20, // Add to queue flag
+  R_FLAG = 0x40, // Reset queue flag
+  P_FLAG = 0x80, // Do polling flag (if 0 - no result will be return)
 }; /* cmd_flag */
 
 /* SPU command flags shifts */
 enum cmd_flag_shift
 {
-  Q_FLAG_SHIFT = 5,  // Add to queue flag
-  R_FLAG_SHIFT = 6,  // Reset queue flag
+  Q_FLAG_SHIFT = 5, // Add to queue flag
+  R_FLAG_SHIFT = 6, // Reset queue flag
+  P_FLAG_SHIFT = 7  // Do polling flag (if 0 - no result will be return)
 }; /* cmd_flag_shift */
 
 /* SPU command mask */
 enum cmd_mask
 {
-  CMD_MASK = 0x9f // Command mask without any flag
+  CMD_MASK   = 0x1f, // Command mask without any flag
+  CMD_TO_SPU = 0x7f  // Command witch can be transfered to SPU (no P flag)
 }; /* cmd_mask */
 
 /* SPU result error enumerator */
