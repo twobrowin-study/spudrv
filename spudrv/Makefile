@@ -15,10 +15,9 @@ obj-m       += $(BINARY).o
 $(BINARY)-y := $(OBJECTS)
 ccflags-y   += ${COMPILER_FLAGS}
 
-KERNEL_SOURCE := ${BAIKAL_HOME}/src/kernel
-PWD 					:= ${shell pwd}
+PWD := ${shell pwd}
 
-$(BINARY).ko:
+$(BINARY).ko: clean
 	${MAKE} -C "${KERNEL_SOURCE}" SUBDIRS="${PWD}" ARCH="${ARCH}" CROSS_COMPILE="${CROSS_COMPILE}" $(TARGETS)
 
 clean:
