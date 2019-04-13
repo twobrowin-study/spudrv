@@ -1,6 +1,6 @@
 /*
-  libspu.hpp
-        - SPU library main file
+  gsid.hpp
+        - GSID provider class declaration and implementation
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -18,18 +18,43 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBSPU_HPP
-#define LIBSPU_HPP
+#ifndef GSID_HPP
+#define GSID_HPP
+
+#include <string>
 
 #include "spu.h"
-#include "key.hpp"
-#include "gsid.hpp"
-#include "key_field.hpp"
-#include "structure.hpp"
 
 namespace SPU
 {
 
+/***************************************
+  GSID class declaration
+***************************************/
+
+/* Global Structure ID */
+class GSID
+{
+private:
+  u32 gsid[GSID_WEIGHT] = {0}; // Global GSID ID
+
+public:
+  /* Creator */
+  void create(u32* gsid)
+  {
+    /* Copy GSID to object */
+    std::copy(gsid,gsid + GSID_WEIGHT, this->gsid);
+  }
+
+  /* Convert into string by formatting */
+  std::string to_std_string()
+  {
+    char buff[100];
+    snprintf(buff, sizeof(buff), GSID_FORMAT, GSID_VAR(gsid));
+    return std::string(buff);
+  }
+};
+
 } /* namespace SPU */
 
-#endif /* LIBSPU_HPP */
+#endif /* GSID_HPP */

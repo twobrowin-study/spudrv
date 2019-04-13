@@ -1,6 +1,6 @@
 /*
-  libspu.hpp
-        - SPU library main file
+  key_field.hpp
+        - declaration for Key class necessaryry types
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -18,18 +18,40 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBSPU_HPP
-#define LIBSPU_HPP
+#ifndef KEY_FIELD_HPP
+#define KEY_FIELD_HPP
 
 #include "spu.h"
-#include "key.hpp"
-#include "gsid.hpp"
-#include "key_field.hpp"
-#include "structure.hpp"
+
+#include <vector>
 
 namespace SPU
 {
 
+/* Container for fields length definitions */
+template <typename NameType>
+struct FieldLength
+{
+  NameType name;
+  u8 length; // Max length for one field is 255
+};
+
+/* Vector for field length definitions */
+template <typename NameType>
+using FieldLengthVector = std::vector < FieldLength<NameType> >;
+
+/* Container for fields data definitions */
+template <typename NameType>
+struct FieldData
+{
+  NameType name;
+  u32 data; // Max data for one field is 32 bits
+};
+
+/* Vector for fields data definitions */
+template <typename NameType>
+using FieldDataVector = std::vector < FieldData<NameType> >;
+
 } /* namespace SPU */
 
-#endif /* LIBSPU_HPP */
+#endif /* KEY_FIELD_HPP */
