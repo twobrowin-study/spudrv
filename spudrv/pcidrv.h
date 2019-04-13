@@ -81,11 +81,11 @@
 #define   SYS2SPU_QOVF_INT_CLR    8
 
 /* SPU architecture constants  */
-#define STURCTURE_NUM      3                      // Log2(Number of all structures in SPU + zero structure)
-#define CMD_SHIFT(cmd)     (cmd<<3*STURCTURE_NUM) // Shift of command itself in command register
-#define STR_A_SHIFT(cmd)   (cmd<<2*STURCTURE_NUM) // Shift of structure A in AND, OR, NOT, LS, LSEQ, GR, GREQ
-#define STR_B_SHIFT(cmd)   (cmd<<1*STURCTURE_NUM) // Shift of structure B in AND, OR, NOT
-#define STR_R_SHIFT(cmd)   (cmd<<0)               // Shift of structure R in AND, OR, NOT, LS, LSEQ, GR, GREQ
+#define STURCTURE_NUM     3                        // Log2(Number of all structures in SPU + zero structure)
+#define CMD_SHIFT(cmd)    ( cmd<<3*STURCTURE_NUM ) // Shift of command itself in command register
+#define STR_A_SHIFT(str)  ( str<<2*STURCTURE_NUM ) // Shift of structure A in AND, OR, NOT, LS, LSEQ, GR, GREQ
+#define STR_B_SHIFT(str)  ( str<<1*STURCTURE_NUM ) // Shift of structure B in AND, OR, NOT
+#define STR_R_SHIFT(str)  ( str<<0 )               // Shift of structure R in AND, OR, NOT, LS, LSEQ, GR, GREQ
 
 /* PCI burst write and read structure */
 struct pci_burst {
@@ -102,6 +102,7 @@ void destroy_pci_driver(void);
 u8 pci_get_revision(void);
 void pci_single_write(u32 data, u32 addr_shift);
 u32 pci_single_read(u32 addr_shift);
+u8 pci_status_read(u32 addr_shift);
 void pci_burst_write(const struct pci_burst *pci_burst);
 void pci_burst_read(const struct pci_burst *pci_burst);
 

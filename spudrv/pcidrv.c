@@ -117,6 +117,18 @@ inline u32 pci_single_read(u32 addr_shift)
   return data;
 }
 
+/* Single PCI device status read */
+inline u8 pci_status_read(u32 addr_shift)
+{
+  u8 data;
+
+  /* Reading */
+  data = ioread8(pci_iomem + REG_ADDR(addr_shift));
+  LOG_DEBUG("Read status 0x%02x from address 0x%02x", data, REG_ADDR(addr_shift));
+
+  return data;
+}
+
 /* Multiple PCI device memory write */
 void pci_burst_write(const struct pci_burst *pci_burst)
 {
@@ -236,8 +248,8 @@ static int pci_driver_probe(struct pci_dev *pdev, const struct pci_device_id *en
   LOG_DEBUG("Initialize SPU");
 
   /* Get SPU current state registers */
-  LOG_DEBUG("Current state is 0x%08x:0x%08x", ioread32(pci_iomem + REG_ADDR(STATE_REG_0)),
-                                              ioread32(pci_iomem + REG_ADDR(STATE_REG_1)));
+  LOG_DEBUG("Current state is 0x%02x:0x%02x", ioread8(pci_iomem + REG_ADDR(STATE_REG_0)),
+                                              ioread8(pci_iomem + REG_ADDR(STATE_REG_1)));
 
   /* Clear SPU structures */
   clear_spu_strs();

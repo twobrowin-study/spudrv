@@ -62,7 +62,7 @@ int create_char_device(void)
   dev_t dev;
 
   // Allocate mem region for the device
-  if(alloc_chrdev_region(&dev, 0, 1, DRIVER_CDEV_NAME) != 0)
+  if(alloc_chrdev_region(&dev, 0, 1, SPU_CDEV_NAME) != 0)
   {
     LOG_ERROR("Cannot allocate character device region");
     return -ENOMEM;
@@ -74,7 +74,7 @@ int create_char_device(void)
   LOG_DEBUG("Major number generated");
 
   // Register sysfs class
-  cdev_class = class_create(THIS_MODULE, DRIVER_CDEV_NAME);
+  cdev_class = class_create(THIS_MODULE, SPU_CDEV_NAME);
   LOG_DEBUG("Sysfs class registered");
 
   /* Init a new char device */
@@ -87,7 +87,7 @@ int create_char_device(void)
   LOG_DEBUG("Character device added into kernel");
 
   // Creating character device file itself
-  device = device_create(cdev_class, NULL, MKDEV(cdev_major, cdev_minor), NULL, DRIVER_CDEV_NAME);
+  device = device_create(cdev_class, NULL, MKDEV(cdev_major, cdev_minor), NULL, SPU_CDEV_NAME);
   LOG_DEBUG("Device created");
 
   return 0;
@@ -123,7 +123,7 @@ static int cdev_release(struct inode *inode, struct file *file)
 static ssize_t cdev_write(struct file *file, const char __user *buf, size_t count, loff_t *offset)
 {
   void *usr_buf = (void*) buf;
-  u8 usr_cmd[count];
+  void *usr_cmd = kmalloc(count, GFP_KERNEL);
   const void *usr_res = NULL;
   int rslt_count = 0;
 
@@ -138,7 +138,7 @@ static ssize_t cdev_write(struct file *file, const char __user *buf, size_t coun
   LOG_DEBUG("Character device copy command from user");
 
   LOG_DEBUG("Character device gave command to execute");
-  rslt_count = execute_cmd((void*)usr_cmd, &usr_res);
+  rslt_count = execute_cmd(usr_cmd, &usr_res);
 
   /* Check if result has length */
   if(rslt_count > 0)
@@ -152,6 +152,12 @@ static ssize_t cdev_write(struct file *file, const char __user *buf, size_t coun
       return -EFAULT;
     }
     LOG_DEBUG("Character device wrote result to user");
+
+    if(usr_cmd)
+    {
+      kzfree(usr_cmd);
+      LOG_DEBUG("Delete command container");
+    }
 
     if(usr_res)
     {

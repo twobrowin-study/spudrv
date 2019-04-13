@@ -61,19 +61,25 @@
                         case NGR
 
 /* Type transform macros */
-#define CMDFRMT_0(ptr) ( (struct cmdfrmt_0 *) ptr )
-#define CMDFRMT_1(ptr) ( (struct cmdfrmt_1 *) ptr )
-#define CMDFRMT_2(ptr) ( (struct cmdfrmt_2 *) ptr )
-#define CMDFRMT_3(ptr) ( (struct cmdfrmt_3 *) ptr )
-#define CMDFRMT_4(ptr) ( (struct cmdfrmt_4 *) ptr )
-#define CMDFRMT_5(ptr) ( (struct cmdfrmt_5 *) ptr )
+#define CMDFRMT_0(ptr)  ( (struct cmdfrmt_0 *) ptr )
+#define CMDFRMT_1(ptr)  ( (struct cmdfrmt_1 *) ptr )
+#define CMDFRMT_2(ptr)  ( (struct cmdfrmt_2 *) ptr )
+#define CMDFRMT_3(ptr)  ( (struct cmdfrmt_3 *) ptr )
+#define CMDFRMT_4(ptr)  ( (struct cmdfrmt_4 *) ptr )
+#define CMDFRMT_5(ptr)  ( (struct cmdfrmt_5 *) ptr )
 #define RSLTFRMT_0(ptr) ( (struct rsltfrmt_0 *) ptr )
 #define RSLTFRMT_1(ptr) ( (struct rsltfrmt_1 *) ptr )
 #define RSLTFRMT_2(ptr) ( (struct rsltfrmt_2 *) ptr )
 
 /* Flag helpers */
-#define GET_Q_FLAG(cmd) ((cmd&Q_FLAG)>>Q_FLAG_SHIFT)
-#define GET_R_FLAG(cmd) ((cmd&R_FLAG)>>R_FLAG_SHIFT)
+#define PURE_CMD(cmd)   ( cmd&CMD_MASK )
+#define SPU_CMD(cmd)    ( cmd&CMD_TO_SPU )
+#define GET_Q_FLAG(cmd) ( (cmd&Q_FLAG)>>Q_FLAG_SHIFT )
+#define GET_R_FLAG(cmd) ( (cmd&R_FLAG)>>R_FLAG_SHIFT )
+#define GET_P_FLAG(cmd) ( (cmd&P_FLAG)>>P_FLAG_SHIFT )
+
+/* SPU state flags helpers */
+#define SPU_FLAG(state, shift) ( state & (1<<shift) )
 
 size_t execute_cmd(const void *cmd_buf, const void **res_buf);
 

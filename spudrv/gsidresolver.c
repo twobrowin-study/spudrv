@@ -30,6 +30,7 @@
 #include "log.h"
 #include "info.h"
 #include "pcidrv.h"
+#include "cmdexec.h"
 #include "gsidresolver.h"
 
 // Structures GSID's currently in SPU memory - init with 0 GSID's
@@ -100,7 +101,7 @@ int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
   }
 
   /* In case commad is delete structure - deleting GSID from memory */
-  if(cmd == DELS)
+  if(PURE_CMD(cmd) == DELS)
   {
     /* Clear this GSID */
     for(j=0; j<GSID_WEIGHT; j++)
