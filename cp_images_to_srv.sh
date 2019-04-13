@@ -22,7 +22,7 @@ TEST_NAME="test04"
 scp spudrv/$DRIVER_NAME $SSH_USER:~/tftpboot/
 
 # Копирование файлов программ
-scp libspu/$TEST_NAME $SSH_USER:~/tftpboot/
+scp $TEST_NAME $SSH_USER:~/tftpboot/
 
 # Выполнение команды передачи прав на файлы в tftpboot пользователю nobody - Операция не позволена
 # ssh $SSH_USER 'chown -R nobody: ~/tftpboot/'
