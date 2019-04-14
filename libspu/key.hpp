@@ -22,8 +22,8 @@
 #ifndef KEY_HPP
 #define KEY_HPP
 
-#include "fields.hpp"
 #include "spu.h"
+#include "fields.hpp"
 
 namespace SPU
 {

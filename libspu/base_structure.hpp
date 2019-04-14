@@ -25,6 +25,7 @@
 #define BASE_STRUCTURE_HPP
 
 #include "spu.h"
+#include "libspu.hpp"
 #include "fileops.hpp"
 
 namespace SPU
@@ -46,6 +47,14 @@ public:
   BaseStructure();
   ~BaseStructure();
   rslt_t insert(key_t key, value_t value, flags_t flags = NO_FLAGS);
+  rslt_t del(key_t key, flags_t flags = NO_FLAGS);
+  value_t search(key_t key, flags_t flags = NO_FLAGS);
+  pair_t min(flags_t flags = NO_FLAGS);
+  pair_t max(flags_t flags = NO_FLAGS);
+  pair_t next(key_t key, flags_t flags = NO_FLAGS);
+  pair_t prev(key_t key, flags_t flags = NO_FLAGS);
+  pair_t nsm(key_t key, flags_t flags = NO_FLAGS);
+  pair_t ngr(key_t key, flags_t flags = NO_FLAGS);
 };
 
 
@@ -111,6 +120,164 @@ rslt_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
   power = result.power;
 
   return result.rslt;
+}
+
+/* Delete command execution */
+rslt_t BaseStructure::del(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  del_cmd_t del =
+  {
+    .cmd  = CMD(DEL | flags),
+    .gsid = gsid,
+    .key  = key
+  };
+  del_rslt_t result;
+
+  /* Execute del command */
+  result = fops.execute<del_cmd_t, del_rslt_t>(del);
+
+  power = result.power;
+
+  return result.rslt;
+}
+
+/* Search command execution */
+value_t BaseStructure::search(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  srch_cmd_t srch =
+  {
+    .cmd  = CMD(SRCH | flags),
+    .gsid = gsid,
+    .key  = key
+  };
+  srch_rslt_t result;
+
+  /* Execute srch command */
+  result = fops.execute<srch_cmd_t, srch_rslt_t>(srch);
+
+  power = result.power;
+
+  return result.val;
+}
+
+/* Min command execution */
+pair_t BaseStructure::min(flags_t flags)
+{
+  /* Initialize INS command */
+  min_cmd_t min =
+  {
+    .cmd  = CMD(MIN | flags),
+    .gsid = gsid
+  };
+  min_rslt_t result;
+
+  /* Execute min command */
+  result = fops.execute<min_cmd_t, min_rslt_t>(min);
+
+  power = result.power;
+
+  return { result.key, result.val };
+}
+
+/* Max command execution */
+pair_t BaseStructure::max(flags_t flags)
+{
+  /* Initialize INS command */
+  max_cmd_t max =
+  {
+    .cmd  = CMD(MAX | flags),
+    .gsid = gsid
+  };
+  max_rslt_t result;
+
+  /* Execute max command */
+  result = fops.execute<max_cmd_t, max_rslt_t>(max);
+
+  power = result.power;
+
+  return { result.key, result.val };
+}
+
+/* Next command execution */
+pair_t BaseStructure::next(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  next_cmd_t next =
+  {
+    .cmd  = CMD(NEXT | flags),
+    .gsid = gsid,
+    .key = key
+  };
+  next_rslt_t result;
+
+  /* Execute next command */
+  result = fops.execute<next_cmd_t, next_rslt_t>(next);
+
+  power = result.power;
+
+  return { result.key, result.val };
+}
+
+/* Previous command execution */
+pair_t BaseStructure::prev(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  prev_cmd_t prev =
+  {
+    .cmd  = CMD(PREV | flags),
+    .gsid = gsid,
+    .key = key
+  };
+  prev_rslt_t result;
+
+  /* Execute prev command */
+  result = fops.execute<prev_cmd_t, prev_rslt_t>(prev);
+
+  power = result.power;
+
+  return { result.key, result.val };
+}
+
+/* Next Smaler command execution */
+pair_t BaseStructure::nsm(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  nsm_cmd_t nsm =
+  {
+    .cmd  = CMD(NSM | flags),
+    .gsid = gsid,
+    .key = key
+  };
+  nsm_rslt_t result;
+
+  /* Execute nsm command */
+  result = fops.execute<nsm_cmd_t, nsm_rslt_t>(nsm);
+
+  power = result.power;
+
+  return { result.key, result.val };
+}
+
+/* Next Greater command execution */
+pair_t BaseStructure::ngr(key_t key, flags_t flags)
+{
+  /* Initialize INS command */
+  ngr_cmd_t ngr =
+  {
+    .cmd  = CMD(NGR | flags),
+    .gsid = gsid,
+    .key = key
+  };
+  ngr_rslt_t result;
+
+  /* Execute ngr command */
+  result = fops.execute<ngr_cmd_t, ngr_rslt_t>(ngr);
+
+  power = result.power;
+
+  return { result.key, result.val };
 }
 
 } /* namespace SPU */

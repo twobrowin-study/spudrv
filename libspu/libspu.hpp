@@ -27,10 +27,4 @@
 #include "fields.hpp"
 #include "structure.hpp"
 
-namespace SPU
-{
-
-} /* namespace SPU */
-
-
 #endif /* LIBSPU_HPP */

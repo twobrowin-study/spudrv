@@ -175,6 +175,16 @@ struct gsid_container
 /* GSID container hider */
 typedef struct gsid_container gsid_t;
 
+/* Key - Value pair container */
+struct pair
+{
+  key_t key;
+  value_t value;
+};
+
+/* Pair container hider */
+typedef struct pair pair_t;
+
 
 
 /***************************************
