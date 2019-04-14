@@ -1,5 +1,5 @@
 /*
-  key_field.hpp
+  fields.hpp
         - declaration for Key class necessaryry types
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
@@ -18,8 +18,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KEY_FIELD_HPP
-#define KEY_FIELD_HPP
+#ifndef FIELDS_HPP
+#define FIELDS_HPP
 
 #include "spu.h"
 
@@ -54,4 +54,4 @@ using FieldDataVector = std::vector < FieldData<NameType> >;
 
 } /* namespace SPU */
 
-#endif /* KEY_FIELD_HPP */
+#endif /* FIELDS_HPP */

@@ -1,8 +1,7 @@
 /*
   structure.hpp
-        - structure class declaration and implementation (because it is a template)
-        - structure is the main concept in whole SPU API
-        - structure is a set of key-value pairs
+        - definitions of structure template class with it's void specialization
+        - this is the base interface class in SPU library
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -23,22 +22,9 @@
 #ifndef STRUCTURE_HPP
 #define STRUCTURE_HPP
 
-#include <string>
-#include <sys/types.h>
-#include <linux/hdreg.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <linux/ioctl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <iostream>
-#include <cstring>
-#include <stdlib.h>
-
-#include "key_field.hpp"
-#include "spu.h"
 #include "key.hpp"
-#include "gsid.hpp"
+#include "fields.hpp"
+#include "base_structure.hpp"
 
 namespace SPU
 {
@@ -47,83 +33,40 @@ namespace SPU
   Structure template class declaration
 ***************************************/
 
-/* Structure in SPU */
-template<typename KeyFieldNameType> // Type to define a field name in associate arrays
+/* Template Structure class definition */
+template<typename KeyFieldNameType = void>
 class Structure
 {
 private:
-  GSID gsid;                          // Global Structure ID
-  Key<KeyFieldNameType> key_provider; // Key Provider Object
-
-  /* File operations provider structure */
-  struct
-  {
-    int dfd = 0; // Driver File Descriptor to connect SPU
-    void *buf;   // Buffer
-    size_t size; // Size of current buffer
-  } fop;
-
-  void* spu_exec(void *cmd, size_t size);
+  BaseStructure base;
+  Key<KeyFieldNameType> key;
 
 public:
-  Structure(FieldLengthVector<KeyFieldNameType> fields_length_vector);
-  ~Structure();
-  // bool insert();
+  Structure(FieldLengthVector<KeyFieldNameType> fields_length_vector) : base(), key(fields_length_vector) {}
+
+  /*************************************
+    Redefinitions of BaseStructure
+    commands with composite key
+  *************************************/
+
+  rslt_t insert(FieldDataVector<KeyFieldNameType> fields_data_vector, value_t value, flags_t flags = NO_FLAGS)
+  {
+    return base.insert(key.compile(fields_data_vector), value, flags);
+  }
 };
 
 
-
 /***************************************
-  Structure class implementation
+  Structure special class declaration
 ***************************************/
 
-/* Execute the command */
-template<typename KeyFieldNameType>
-void* Structure<KeyFieldNameType>::spu_exec(void *cmd, size_t size)
+/* Structure class void specialization witch is only BaseStructure son */
+template<>
+class Structure<void> : public BaseStructure
 {
-  fop.buf = cmd;
-  fop.size = size;
-  fop.size = write(fop.dfd, fop.buf, fop.size);
-  return fop.buf;
-}
-
-/* Constructor from nothing */
-template<typename KeyFieldNameType>
-Structure<KeyFieldNameType>::Structure(FieldLengthVector<KeyFieldNameType> fields_length_vector) : key_provider(fields_length_vector)
-{
-  /* Get char dev descriptor */
-  fop.dfd = open("/dev/" SPU_CDEV_NAME, O_RDWR);
-
-  /* Init ADDS command */
-  struct cmdfrmt_0 adds =
-  {
-    .cmd = ADDS | P_FLAG
-  };
-
-  /* Execute command */
-  struct rsltfrmt_0 result_format = *( (struct rsltfrmt_0*) spu_exec(&adds, sizeof(adds)) );
-
-  if(result_format.rslt == OK)
-  {  
-    /* Create GSID */
-    gsid.create(result_format.gsid);
-    std::cout << "Got GSID " << gsid.to_std_string() << std::endl;
-  }
-  else
-  {
-    std::cout << "ERR" << std::endl;
-  }
-}
-
-/* Destructor */
-template<typename KeyFieldNameType>
-Structure<KeyFieldNameType>::~Structure()
-{
-  if (fop.dfd)
-  {
-    close(fop.dfd);
-  }
-}
+public:
+  Structure() : BaseStructure() {}
+};
 
 } /* namespace SPU */
 

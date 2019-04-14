@@ -141,6 +141,9 @@ typedef enum cmd cmd_t;
 typedef enum cmd_flag flags_t;
 typedef enum rslt rslt_t;
 
+// Macro to convert into command type
+#define CMD(cmd) ( (cmd_t) (cmd) )
+
 
 
 /***************************************
@@ -159,6 +162,7 @@ typedef struct data_container val_t;
 
 #ifdef __cplusplus
 typedef struct data_container key_t; // In C++ defined inside namespace
+typedef struct data_container value_t; // In C++ prefered full names
 #endif /* __cplusplus */
 
 

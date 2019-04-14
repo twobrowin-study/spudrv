@@ -1,6 +1,6 @@
 /*
-  gsid.hpp
-        - GSID provider class declaration and implementation
+  fileops.hpp
+        - file operation helper class declaration and implementation
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -18,43 +18,55 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GSID_HPP
-#define GSID_HPP
+#ifndef FILEOPS_HPP
+#define FILEOPS_HPP
 
-#include <string>
-
-#include "spu.h"
+#include <unistd.h>
+#include <fcntl.h>
 
 namespace SPU
 {
 
 /***************************************
-  GSID class declaration
+  File operations class definition
 ***************************************/
 
-/* Global Structure ID */
-class GSID
+/* File operations helper */
+class Fileops
 {
 private:
-  u32 gsid[GSID_WEIGHT] = {0}; // Global GSID ID
+  int descriptor = 0; // Driver File Descriptor to connect SPU
 
 public:
-  /* Creator */
-  void create(u32* gsid)
+
+  /* Constructor */
+  Fileops(const char* filename)
   {
-    /* Copy GSID to object */
-    std::copy(gsid,gsid + GSID_WEIGHT, this->gsid);
+    descriptor = open(filename, O_RDWR);
   }
 
-  /* Convert into string by formatting */
-  std::string to_std_string()
+
+  /* Destructor */
+  ~Fileops()
   {
-    char buff[100];
-    snprintf(buff, sizeof(buff), GSID_FORMAT, GSID_VAR(gsid));
-    return std::string(buff);
+    if(descriptor)
+    {
+      close(descriptor);
+    }
+  }
+
+
+  /* Template method witch executes given format */
+  template<typename CmdFrmt, typename RsltFrmt>
+  RsltFrmt execute(CmdFrmt &cmd)
+  {
+    void* buf    = &cmd;
+    size_t count = sizeof(CmdFrmt);
+    count        = write(descriptor, buf, count);
+    return *(RsltFrmt *)buf;
   }
 };
 
 } /* namespace SPU */
 
-#endif /* GSID_HPP */
+#endif /* FILEOPS_HPP */

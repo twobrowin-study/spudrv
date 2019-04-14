@@ -1,6 +1,8 @@
 /*
   libspu.hpp
-        - SPU library main file
+        - SPU library to include file
+        - simultaneously c++ and pure c header
+        - file defines containers for key and value data and some more type hiders
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -22,14 +24,13 @@
 #define LIBSPU_HPP
 
 #include "spu.h"
-#include "key.hpp"
-#include "gsid.hpp"
-#include "key_field.hpp"
+#include "fields.hpp"
 #include "structure.hpp"
 
 namespace SPU
 {
 
 } /* namespace SPU */
+
 
 #endif /* LIBSPU_HPP */

@@ -22,7 +22,7 @@
 #ifndef KEY_HPP
 #define KEY_HPP
 
-#include "key_field.hpp"
+#include "fields.hpp"
 #include "spu.h"
 
 namespace SPU
@@ -50,7 +50,7 @@ public:
   Key(FieldLengthVector<FieldNameType> fields_length_vector) : flen_vector(fields_length_vector) {}
 
   /* Key compilation */
-  bool compileKey(u32 key[SPU_WEIGHT], FieldDataVector<FieldNameType> fields_data_vector);
+  key_t compile(FieldDataVector<FieldNameType> fields_data_vector);
 };
 
 
@@ -88,8 +88,9 @@ u32 Key<FieldNameType>::find_data_by_name(FieldDataVector<FieldNameType> fields_
 
 /* Key construction */
 template<typename FieldNameType>
-bool Key<FieldNameType>::compileKey(u32 key[SPU_WEIGHT], FieldDataVector<FieldNameType> fields_data_vector)
+key_t Key<FieldNameType>::compile(FieldDataVector<FieldNameType> fields_data_vector)
 {
+  key_t key = {0};
   u32 shift = 0; // Shift at current iteration (length at previous)
   u8 weight = 0; // Current 32 bit unit in key width
 
@@ -102,7 +103,7 @@ bool Key<FieldNameType>::compileKey(u32 key[SPU_WEIGHT], FieldDataVector<FieldNa
     u32 field = field_data & field_mask; // Masking
 
     /* Add field to key */
-    key[weight] |= field << shift; // Shifting
+    key.cont[weight] |= field << shift; // Shifting
     
     /* Iterate in key */
     u32 prev_shift = shift;
@@ -120,11 +121,11 @@ bool Key<FieldNameType>::compileKey(u32 key[SPU_WEIGHT], FieldDataVector<FieldNa
 
       /* Add residual */
       u32 portion = mask(shift);
-      key[weight] |= field & portion;
+      key.cont[weight] |= field & portion;
     }
   }
 
-  return true;
+  return key;
 }
 
 } /* namespace SPU */
