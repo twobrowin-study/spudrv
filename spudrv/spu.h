@@ -27,13 +27,22 @@ namespace SPU
 {
 #endif /* __cplusplus */
 
-/* Used types */
+
+
+/***************************************
+  Used base types
+***************************************/
 typedef unsigned int  u32;
 typedef unsigned char u8;
 
 
+
+/***************************************
+  Configure macros
+***************************************/
+
 /* Macro to get right SPU Character Device name */
-#define SPU_CDEV_NAME   "spu"
+#define SPU_CDEV_NAME "spu"
 
 /* Macros of unsigned int's in one SPU data/key unit */
 #ifdef SPU32
@@ -57,11 +66,17 @@ typedef unsigned char u8;
 #if GSID_WEIGHT == 4
   #define GSID_FORMAT " %08x-%08x-%08x-%08x "
   #define GSID_VAR(var) \
-    var[0], var[1], var[2], var[3]
+    (var).cont[0], (var).cont[1], (var).cont[2], (var).cont[3]
 #endif
 
 // Number of structures in SPU memory
 #define SPU_STR_NUM 7
+
+
+
+/***************************************
+  Enumerators
+***************************************/
 
 /* SPU commands enumerator */
 enum cmd
@@ -89,9 +104,10 @@ enum cmd
 /* SPU command flags */
 enum cmd_flag
 {
-  Q_FLAG = 0x20, // Add to queue flag
-  R_FLAG = 0x40, // Reset queue flag
-  P_FLAG = 0x80, // Do polling flag (if 0 - no result will be return)
+  NO_FLAGS = 0x00, // No flags
+  Q_FLAG   = 0x20, // Add to queue flag
+  R_FLAG   = 0x40, // Reset queue flag
+  P_FLAG   = 0x80, // Do polling flag (if 0 - no result will be return)
 }; /* cmd_flag */
 
 /* SPU command flags shifts */
@@ -110,11 +126,56 @@ enum cmd_mask
 }; /* cmd_mask */
 
 /* SPU result error enumerator */
-enum rslt_err
+enum rslt
 {
   OK  = 0x00,
   ERR = 0x02
-}; /* enum rslt_err */
+}; /* enum rslt */
+
+
+
+/***************************************
+  Enumerator hiders
+***************************************/
+typedef enum cmd cmd_t;
+typedef enum cmd_flag flags_t;
+typedef enum rslt rslt_t;
+
+
+
+/***************************************
+  Container structures
+***************************************/
+
+/* Structure container for SPU key and value data */
+struct data_container
+{
+  u32 cont[SPU_WEIGHT];
+};
+
+/* Container hiders */
+typedef struct data_container spu_key_t; // Defined as SPU's to reduce conflict with kernel's key_t
+typedef struct data_container val_t;
+
+#ifdef __cplusplus
+typedef struct data_container key_t; // In C++ defined inside namespace
+#endif /* __cplusplus */
+
+
+/* Structure container for SPU key and value data */
+struct gsid_container
+{
+  u32 cont[GSID_WEIGHT];
+};
+
+/* GSID container hider */
+typedef struct gsid_container gsid_t;
+
+
+
+/***************************************
+  Command formats
+***************************************/
 
 /* Command format 0 - ADDS */
 struct cmdfrmt_0
@@ -125,67 +186,89 @@ struct cmdfrmt_0
 /* Command format 1 - INS */
 struct cmdfrmt_1
 {
-  u8 cmd;
-  u32 gsid[GSID_WEIGHT];
-  u32 key[SPU_WEIGHT];
-  u32 val[SPU_WEIGHT];
+  cmd_t cmd;
+  gsid_t gsid;
+  spu_key_t key;
+  val_t val;
 };
 
 /* Command format 2 - SRCH, DEL, NEXT, PREV, NSM, NGR */
 struct cmdfrmt_2
 {
-  u8 cmd;
-  u32 gsid[GSID_WEIGHT];
-  u32 key[SPU_WEIGHT];
+  cmd_t cmd;
+  gsid_t gsid;
+  spu_key_t key;
 };
 
 /* Command format 3 - DELS, MIN, MAX */
 struct cmdfrmt_3
 {
-  u8 cmd;
-  u32 gsid[GSID_WEIGHT];
+  cmd_t cmd;
+  gsid_t gsid;
 };
 
 /* Command format 4 - AND, OR, NOT */
 struct cmdfrmt_4
 {
-  u8 cmd;
-  u32 gsid_a[GSID_WEIGHT];
-  u32 gsid_b[GSID_WEIGHT];
-  u32 gsid_r[GSID_WEIGHT];
+  cmd_t cmd;
+  gsid_t gsid_a;
+  gsid_t gsid_b;
+  gsid_t gsid_r;
 };
 
 /* Command format 5 - LS, LSEQ, GR, GREQ */
 struct cmdfrmt_5
 {
-  u8 cmd;
-  u32 gsid_a[GSID_WEIGHT];
-  u32 gsid_r[GSID_WEIGHT];
-  u32 key[SPU_WEIGHT];
+  cmd_t cmd;
+  gsid_t gsid_a;
+  gsid_t gsid_r;
+  spu_key_t key;
 };
+
+
+
+/***************************************
+  Result formats
+***************************************/
 
 /* Result format 0 - ADDS */
 struct rsltfrmt_0
 {
-  u8 rslt;
-  u32 gsid[GSID_WEIGHT];
+  rslt_t rslt;
+  gsid_t gsid;
 };
 
 /* Result format 1 - DELS, AND, OR, NOT, LS, LSEQ, GR, GREQ */
 struct rsltfrmt_1
 {
-  u8 rslt;
+  rslt_t rslt;
   u32 power;
 };
 
 /* Result format 2 - SRCH, INS, DEL, MIN, MAX, NEXT, PREV, NSM, NGR */
 struct rsltfrmt_2
 {
-  u8 rslt;
-  u32 key[SPU_WEIGHT];
-  u32 val[SPU_WEIGHT];
+  rslt_t rslt;
+  spu_key_t key;
+  val_t val;
   u32 power;
 };
+
+
+
+/***************************************
+  Format hiders
+***************************************/
+
+typedef struct cmdfrmt_0 adds_cmd_t;
+typedef struct cmdfrmt_1 ins_cmd_t;
+typedef struct cmdfrmt_2 srch_cmd_t, del_cmd_t, next_cmd_t, prev_cmd_t, nsm_cmd_t, ngr_cmd_t;
+typedef struct cmdfrmt_3 dels_cmd_t, min_cmd_t, max_cmd_t;
+typedef struct cmdfrmt_4 and_cmd_t, or_cmd_t, not_cmd_t;
+typedef struct cmdfrmt_5 ls_cmd_t, lseq_cmd_t, gr_cmd_t, greq_cmd_t;
+typedef struct rsltfrmt_0 adds_rslt_t;
+typedef struct rsltfrmt_1 dels_rslt_t, and_rslt_t, or_rslt_t, not_rslt_t, ls_rslt_t, lseq_rslt_t, gr_rslt_t, greq_rslt_t;
+typedef struct rsltfrmt_2 srch_rslt_t, ins_rslt_t, del_rslt_t, min_rslt_t, max_rslt_t, next_rslt_t, prev_rslt_t, nsm_rslt_t, ngr_rslt_t;
 
 /* End of namespace SPU */
 #ifdef __cplusplus

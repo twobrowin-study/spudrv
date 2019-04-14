@@ -210,7 +210,7 @@ static void adds(const void *res_buf)
   LOG_DEBUG("ADDS command execution");
 
   /* Result generation */
-  if(create_gsid(RSLTFRMT_0(res_buf)->gsid) != 0)
+  if(create_gsid(&RSLTFRMT_0(res_buf)->gsid) != 0)
   {
     LOG_ERROR("ADDS command execution error");
     return; // ERR result code already in result structure
@@ -351,11 +351,11 @@ static int init_burst_w(struct pci_burst *pci_burst, u8 cmd, const void *cmd_buf
       {
         /* Set key */
         pci_burst->addr_shift[i] = KEY_REG + i;
-        pci_burst->data[i]       = CMDFRMT_1(cmd_buf)->key[i];
+        pci_burst->data[i]       = CMDFRMT_1(cmd_buf)->key.cont[i];
 
         /* Set value */
         pci_burst->addr_shift[i+SPU_WEIGHT] = VAL_REG + i;
-        pci_burst->data[i+SPU_WEIGHT]       = CMDFRMT_1(cmd_buf)->val[i];
+        pci_burst->data[i+SPU_WEIGHT]       = CMDFRMT_1(cmd_buf)->val.cont[i];
       }
 
       /* Last one is a command */
@@ -372,7 +372,7 @@ static int init_burst_w(struct pci_burst *pci_burst, u8 cmd, const void *cmd_buf
       {
         /* Set key */
         pci_burst->addr_shift[i] = KEY_REG + i;
-        pci_burst->data[i]       = CMDFRMT_2(cmd_buf)->key[i];
+        pci_burst->data[i]       = CMDFRMT_2(cmd_buf)->key.cont[i];
       }
 
       /* Last one is a command */
@@ -552,8 +552,8 @@ static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_bu
       /* Initialize in loop key and value */
       for(i=0; i<SPU_WEIGHT; i++)
       {
-        RSLTFRMT_2(res_buf)->key[i] = pci_burst->data[i];
-        RSLTFRMT_2(res_buf)->val[i] = pci_burst->data[i+SPU_WEIGHT];
+        RSLTFRMT_2(res_buf)->key.cont[i] = pci_burst->data[i];
+        RSLTFRMT_2(res_buf)->val.cont[i] = pci_burst->data[i+SPU_WEIGHT];
       }
 
       /* Last one is a power */

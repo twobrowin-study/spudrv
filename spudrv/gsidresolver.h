@@ -22,14 +22,14 @@
 #ifndef GSIDRESOLVER_H
 #define GSIDRESOLVER_H
 
-int create_gsid(u32 gsid[GSID_WEIGHT]);
-int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd);
+int create_gsid(gsid_t *gsid);
+int resolve_gsid(gsid_t gsid, u8 cmd);
 
 /* Macro of two GSID's equality */
 /* Only GSID_WEIGHT = 4 supports */
 #if GSID_WEIGHT == 4
   #define GSID_EQUAL(a, b) \
-    (a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3])
+    ((a).cont[0] == (b).cont[0] && (a).cont[1] == (b).cont[1] && (a).cont[2] == (b).cont[2] && (a).cont[3] == (b).cont[3])
 #endif
 
 /* Acting SPU structure number macro */

@@ -34,54 +34,68 @@
 #include "gsidresolver.h"
 
 // Structures GSID's currently in SPU memory - init with 0 GSID's
-static u32 gsids_in_spu[SPU_STR_NUM][GSID_WEIGHT] = { 0 };
+static gsid_t gsids_in_spu[SPU_STR_NUM] = { { .cont = {0} } };
 
 /* Create new GSID -> generate it and add into memory */
-int create_gsid(u32 gsid[GSID_WEIGHT])
+int create_gsid(gsid_t *gsid)
 {
   u8 i;
+  gsid_t zero_gsid =
+  {
+    .cont = {0}
+  };
 
   /* Only GSID_WEIGHT = 4 supports - in other cases result is 0 */
 #if GSID_WEIGHT == 4
 
   /* Generating GSID */
+  gsid_t gen_gsid =
+  {
+    .cont = 
+    {
+      // First 32 bits - is current driver version and SPU revision
+      (DRIVER_VERSION_NUM<<16) | (pci_get_revision()),
 
-  // First 32 bits - is current driver version and SPU revision
-  gsid[0] = (DRIVER_VERSION_NUM<<16) | (pci_get_revision());
+      /* Second and third 32 bits - just random */
+      get_random_int(),
+      get_random_int(),
 
-  /* Second and third 32 bits - just random */
-  gsid[1] = get_random_int();
-  gsid[2] = get_random_int();
- 
-  // Last 32 bits is time in ms
-  gsid[3] = get_seconds();
-
+      // Last 32 bits is time in ms
+      get_seconds()
+    }
+  };
 #endif /* GSID_WEIGHT == 4 */
 
-  LOG_DEBUG("Generated GSID" GSID_FORMAT, GSID_VAR(gsid));
+  *gsid = gen_gsid;
+
+  LOG_DEBUG("Generated GSID" GSID_FORMAT, GSID_VAR(*gsid));
 
   /* Add GSID into GSID container */
 
   /* Try to add GSID into SPU local memory */
   for(i=0; i<SPU_STR_NUM; i++)
   {
-    if(*gsids_in_spu[i] == 0) // Check if GSID is zero (actually just first 32 bits)
+    if(GSID_EQUAL(gsids_in_spu[i], zero_gsid)) // Check if GSID is zero
     {
-      memcpy(gsids_in_spu[i], gsid, GSID_WEIGHT*sizeof(u32));
+      gsids_in_spu[i] = *gsid;
       LOG_DEBUG("Add GSID:" GSID_FORMAT "to SPU memory position %d", GSID_VAR(gsids_in_spu[i]), SPU_STR(i));
       return 0;
     }
   }
 
   // Try was unsuccess
-  LOG_ERROR("No space in SPU memory for GSID:" GSID_FORMAT, GSID_VAR(gsid));
+  LOG_ERROR("No space in SPU memory for GSID:" GSID_FORMAT, GSID_VAR(*gsid));
   return -ENOKEY;
 }
 
 /* Get structure number from local SPU memory by GSID */
-int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
+int resolve_gsid(gsid_t gsid, u8 cmd)
 {
-  u8 i, j;
+  u8 i;
+  gsid_t zero_gsid =
+  {
+    .cont = {0}
+  };
 
   /* Try to find GSID in SPU local memory */
   for(i=0; i<SPU_STR_NUM; i++)
@@ -104,10 +118,7 @@ int resolve_gsid(const u32 gsid[GSID_WEIGHT], u8 cmd)
   if(PURE_CMD(cmd) == DELS)
   {
     /* Clear this GSID */
-    for(j=0; j<GSID_WEIGHT; j++)
-    {
-      gsids_in_spu[i][j] = 0;
-    }
+    gsids_in_spu[i] = zero_gsid;
     LOG_DEBUG("Delete GSID" GSID_FORMAT "from SPU memory", GSID_VAR(gsid));
   }
 
