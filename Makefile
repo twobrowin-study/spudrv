@@ -25,7 +25,7 @@ ifeq (${DEBUG}, true)
 endif
 
 # Default targets
-default: clean $(DRIVER).ko $(TARGET)
+default: $(DRIVER).ko $(TARGET)
 all: default
 
 # Building SPU driver
