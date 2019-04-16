@@ -60,37 +60,37 @@ public:
     return base.del(key.compile(fields_data_vector), flags);
   }
 
-  value_t search(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  value_t search(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.search(key.compile(fields_data_vector), flags);
   }
 
-  pair_t min(flags_t flags = NO_FLAGS)
+  pair_t min(flags_t flags = P_FLAG)
   {
     return base.min(flags);
   }
 
-  pair_t max(flags_t flags = NO_FLAGS)
+  pair_t max(flags_t flags = P_FLAG)
   {
     return base.max(flags);
   }
 
-  pair_t next(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  pair_t next(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.next(key.compile(fields_data_vector), flags);
   }
 
-  pair_t prev(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  pair_t prev(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.prev(key.compile(fields_data_vector), flags);
   }
 
-  pair_t nsm(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  pair_t nsm(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.nsm(key.compile(fields_data_vector), flags);
   }
 
-  pair_t ngr(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  pair_t ngr(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.ngr(key.compile(fields_data_vector), flags);
   }

@@ -48,13 +48,13 @@ public:
   ~BaseStructure();
   rslt_t insert(key_t key, value_t value, flags_t flags = NO_FLAGS);
   rslt_t del(key_t key, flags_t flags = NO_FLAGS);
-  value_t search(key_t key, flags_t flags = NO_FLAGS);
-  pair_t min(flags_t flags = NO_FLAGS);
-  pair_t max(flags_t flags = NO_FLAGS);
-  pair_t next(key_t key, flags_t flags = NO_FLAGS);
-  pair_t prev(key_t key, flags_t flags = NO_FLAGS);
-  pair_t nsm(key_t key, flags_t flags = NO_FLAGS);
-  pair_t ngr(key_t key, flags_t flags = NO_FLAGS);
+  value_t search(key_t key, flags_t flags = P_FLAG);
+  pair_t min(flags_t flags = P_FLAG);
+  pair_t max(flags_t flags = P_FLAG);
+  pair_t next(key_t key, flags_t flags = P_FLAG);
+  pair_t prev(key_t key, flags_t flags = P_FLAG);
+  pair_t nsm(key_t key, flags_t flags = P_FLAG);
+  pair_t ngr(key_t key, flags_t flags = P_FLAG);
 };
 
 
@@ -159,6 +159,12 @@ value_t BaseStructure::search(key_t key, flags_t flags)
 
   power = result.power;
 
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
+
   return result.val;
 }
 
@@ -178,6 +184,12 @@ pair_t BaseStructure::min(flags_t flags)
 
   power = result.power;
 
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
+
   return { result.key, result.val };
 }
 
@@ -196,6 +208,12 @@ pair_t BaseStructure::max(flags_t flags)
   result = fops.execute<max_cmd_t, max_rslt_t>(max);
 
   power = result.power;
+
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
 
   return { result.key, result.val };
 }
@@ -217,6 +235,12 @@ pair_t BaseStructure::next(key_t key, flags_t flags)
 
   power = result.power;
 
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
+
   return { result.key, result.val };
 }
 
@@ -236,6 +260,12 @@ pair_t BaseStructure::prev(key_t key, flags_t flags)
   result = fops.execute<prev_cmd_t, prev_rslt_t>(prev);
 
   power = result.power;
+
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
 
   return { result.key, result.val };
 }
@@ -257,6 +287,12 @@ pair_t BaseStructure::nsm(key_t key, flags_t flags)
 
   power = result.power;
 
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
+
   return { result.key, result.val };
 }
 
@@ -276,6 +312,12 @@ pair_t BaseStructure::ngr(key_t key, flags_t flags)
   result = fops.execute<ngr_cmd_t, ngr_rslt_t>(ngr);
 
   power = result.power;
+
+  /* Check if any error */
+  if(result.rslt != OK)
+  {
+    return {0}; // Return zero at all fields and arrays
+  }
 
   return { result.key, result.val };
 }

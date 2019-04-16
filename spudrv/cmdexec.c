@@ -122,6 +122,14 @@ size_t execute_cmd(const void *cmd_buf, const void **res_buf)
     }
     LOG_DEBUG("SPU finish operation");
 
+    /* Check if there was an error */
+    if(ERRORS(spu_state))
+    {
+      LOG_ERROR("Error occured: SPU State 0 = 0x%02x", spu_state);
+      RSLTFRMT_0(*res_buf)->rslt = ERRORS(spu_state);
+      return sizeof(struct rsltfrmt_0); // Return as format 0
+    }
+
     /* Read results */
     pci_burst_read(&pci_burst_r);
     set_rsltfrmt(&pci_burst_r, cmd, *res_buf, spu_state);
@@ -162,31 +170,33 @@ static size_t alloc_rslt(const void **res_buf, u8 cmd)
 
   if(GET_P_FLAG(cmd) == 0)
   {
-    LOG_DEBUG("Would not allocate result because no polling need");
-    return 0;
+    LOG_DEBUG("Allocate result format 0 structure because no polling need");
+    rslt_size = sizeof(struct rsltfrmt_0);
   }
-
-  /* Set result size for format */
-  switch(PURE_CMD(cmd))
+  else
   {
-    CASE_RSLTFRMT_0:
-      LOG_DEBUG("Allocate result format 0 structure");
-      rslt_size = sizeof(struct rsltfrmt_0);
-      break;
+    /* Set result size for format */
+    switch(PURE_CMD(cmd))
+    {
+      CASE_RSLTFRMT_0:
+        LOG_DEBUG("Allocate result format 0 structure");
+        rslt_size = sizeof(struct rsltfrmt_0);
+        break;
 
-    CASE_RSLTFRMT_1:
-      LOG_DEBUG("Allocate result format 1 structure");
-      rslt_size = sizeof(struct rsltfrmt_1);
-      break;
+      CASE_RSLTFRMT_1:
+        LOG_DEBUG("Allocate result format 1 structure");
+        rslt_size = sizeof(struct rsltfrmt_1);
+        break;
 
-    CASE_RSLTFRMT_2:
-      LOG_DEBUG("Allocate result format 2 structure");
-      rslt_size = sizeof(struct rsltfrmt_2);
-      break;
+      CASE_RSLTFRMT_2:
+        LOG_DEBUG("Allocate result format 2 structure");
+        rslt_size = sizeof(struct rsltfrmt_2);
+        break;
 
-    default:
-      LOG_ERROR("Command was not found to allocate result");
-      return -ENOEXEC;
+      default:
+        LOG_ERROR("Command was not found to allocate result");
+        return -ENOEXEC;
+    }
   }
 
   /* Allocate */
@@ -198,8 +208,8 @@ static size_t alloc_rslt(const void **res_buf, u8 cmd)
   }
   LOG_DEBUG("Allocate result with size %ld", (unsigned long int)rslt_size);
 
-  /* Set standard error return code */
-  RSLTFRMT_0(*res_buf)->rslt = ERR;
+  /* Set standard error return code (if no polling required that wold be OK) */
+  RSLTFRMT_0(*res_buf)->rslt = GET_P_FLAG(cmd) ? ERR : OK;
 
   return rslt_size;
 }

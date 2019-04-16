@@ -135,7 +135,7 @@ void pci_burst_write(const struct pci_burst *pci_burst)
   u8 i;
   LOG_DEBUG("Writing %d words", pci_burst->count);
 
-  for(i=0; i<pci_burst->count; i++)
+  for(i = 0; i<pci_burst->count; i++)
   {
     pci_single_write(pci_burst->data[i], pci_burst->addr_shift[i]);
   }
@@ -147,7 +147,7 @@ void pci_burst_read(const struct pci_burst *pci_burst)
   u8 i;
   LOG_DEBUG("Reading %d words", pci_burst->count);
 
-  for(i=0; i<pci_burst->count; i++)
+  for(i = 0; i<pci_burst->count; i++)
   {
     // Brust-getter should provide empty array to write data in
     pci_burst->data[i] = pci_single_read(pci_burst->addr_shift[i]);
@@ -165,7 +165,8 @@ static int pci_driver_probe(struct pci_dev *pdev, const struct pci_device_id *en
 {
   int bar, err;
   unsigned long mmio_start,mmio_len;
-  u32 cntl_reg_0  = 0x0, cntl_reg_1  = 0x0; // SPU control registers to be sent
+  u32 cntl_reg_0 = 0x0, cntl_reg_1 = 0x0; // SPU control registers to be sent
+  u8 stat_reg_0, stat_reg_1;              // SPU status registers to be check
 
   /* Check config */
   if (read_device_config(pdev) < 0) {
@@ -248,8 +249,17 @@ static int pci_driver_probe(struct pci_dev *pdev, const struct pci_device_id *en
   LOG_DEBUG("Initialize SPU");
 
   /* Get SPU current state registers */
-  LOG_DEBUG("Current state is 0x%02x:0x%02x", ioread8(pci_iomem + REG_ADDR(STATE_REG_0)),
-                                              ioread8(pci_iomem + REG_ADDR(STATE_REG_1)));
+  stat_reg_0 = ioread8(pci_iomem + REG_ADDR(STATE_REG_0));
+  stat_reg_1 = ioread8(pci_iomem + REG_ADDR(STATE_REG_1));
+  LOG_DEBUG("Current state is 0x%02x:0x%02x", stat_reg_0, stat_reg_1);
+
+  /* Check if DDR initialized */
+  if( ((stat_reg_0 >> DDR_TEST_SUCC_FLAG) & 0x1) == 0 )
+  {
+    LOG_ERROR("DDR initialization failed");
+    return -EIO;
+  }
+  LOG_DEBUG("DDR initialized");
 
   /* Clear SPU structures */
   clear_spu_strs();
@@ -322,7 +332,7 @@ static inline void clear_spu_strs(void)
 {
   u8 i;
 
-  for(i=0; i<SPU_STR_NUM; i++)
+  for(i = 0; i<SPU_STR_NUM; i++)
   {
     // Clear structure
     pci_single_write(CMD_SHIFT(DELS) | i, CMD_REG);

@@ -80,6 +80,9 @@
 #define   SPU2CPU_DRDY_INT_CLR    7
 #define   SYS2SPU_QOVF_INT_CLR    8
 
+/* Macro to find any error classes */
+#define ERRORS(state) ( state & ERRORS_MASK )
+
 /* SPU architecture constants  */
 #define STURCTURE_NUM     3                        // Log2(Number of all structures in SPU + zero structure)
 #define CMD_SHIFT(cmd)    ( cmd<<3*STURCTURE_NUM ) // Shift of command itself in command register

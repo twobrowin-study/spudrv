@@ -128,9 +128,17 @@ enum cmd_mask
 /* SPU result error enumerator */
 enum rslt
 {
-  OK  = 0x00,
-  ERR = 0x02
+  OK   = 0x00, // Result is OK
+  ERR  = 0x02, // Command exec error
+  QERR = 0x04, // Queue error
+  OERR = 0x08  // Command overflow error
 }; /* enum rslt */
+
+/* SPU result masks */
+enum rslt_mask
+{
+  ERRORS_MASK = 0x0E
+}; /* enum rslt_mask */
 
 
 
@@ -252,14 +260,14 @@ struct rsltfrmt_0
   gsid_t gsid;
 };
 
-/* Result format 1 - DELS, AND, OR, NOT, LS, LSEQ, GR, GREQ */
+/* Result format 1 - DELS, AND, OR, NOT, LS, LSEQ, GR, GREQ, INS */
 struct rsltfrmt_1
 {
   rslt_t rslt;
   u32 power;
 };
 
-/* Result format 2 - SRCH, INS, DEL, MIN, MAX, NEXT, PREV, NSM, NGR */
+/* Result format 2 - SRCH, DEL, MIN, MAX, NEXT, PREV, NSM, NGR */
 struct rsltfrmt_2
 {
   rslt_t rslt;
@@ -281,8 +289,8 @@ typedef struct cmdfrmt_3 dels_cmd_t, min_cmd_t, max_cmd_t;
 typedef struct cmdfrmt_4 and_cmd_t, or_cmd_t, not_cmd_t;
 typedef struct cmdfrmt_5 ls_cmd_t, lseq_cmd_t, gr_cmd_t, greq_cmd_t;
 typedef struct rsltfrmt_0 adds_rslt_t;
-typedef struct rsltfrmt_1 dels_rslt_t, and_rslt_t, or_rslt_t, not_rslt_t, ls_rslt_t, lseq_rslt_t, gr_rslt_t, greq_rslt_t;
-typedef struct rsltfrmt_2 srch_rslt_t, ins_rslt_t, del_rslt_t, min_rslt_t, max_rslt_t, next_rslt_t, prev_rslt_t, nsm_rslt_t, ngr_rslt_t;
+typedef struct rsltfrmt_1 dels_rslt_t, ins_rslt_t, and_rslt_t, or_rslt_t, not_rslt_t, ls_rslt_t, lseq_rslt_t, gr_rslt_t, greq_rslt_t;
+typedef struct rsltfrmt_2 srch_rslt_t, del_rslt_t, min_rslt_t, max_rslt_t, next_rslt_t, prev_rslt_t, nsm_rslt_t, ngr_rslt_t;
 
 /* End of namespace SPU */
 #ifdef __cplusplus

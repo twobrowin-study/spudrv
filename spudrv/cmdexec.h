@@ -43,6 +43,7 @@
 /* Macros to switch across result formats */
 #define CASE_RSLTFRMT_0 case ADDS
 #define CASE_RSLTFRMT_1 case DELS:\
+                        case INS:\
                         case AND:\
                         case OR:\
                         case NOT:\
@@ -51,7 +52,6 @@
                         case GR:\
                         case GREQ
 #define CASE_RSLTFRMT_2 case SRCH:\
-                        case INS:\
                         case DEL:\
                         case MIN:\
                         case MAX:\

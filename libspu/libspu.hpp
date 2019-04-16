@@ -53,9 +53,40 @@ std::string to_string(struct data_container data)
   return ret.substr(0, ret.size()-1);
 }
 
+/* Convert key : value pair into string */
 std::string to_string(pair_t pair)
 {
   return to_string(pair.key) + " : " + to_string(pair.value);
+}
+
+/* Convert result into string */
+std::string to_string(rslt_t rslt)
+{
+  /* Check if rslt is OK */
+  if(rslt == OK)
+  {
+    return "OK";
+  }
+
+  std::string ret;
+
+  /* If rslt is not OK find all parts */
+  if(rslt & ERR)
+  {
+    ret += "ERR & ";
+  }
+
+  if(rslt & QERR)
+  {
+    ret += "QERR & ";
+  }
+
+  if(rslt & OERR)
+  {
+    ret += "OERR & ";
+  }
+
+  return ret.substr(0, ret.size()-3);
 }
 
 } /* namespace SPU */
