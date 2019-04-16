@@ -10,6 +10,7 @@ OBJS    = test04.o
 
 # Current arch
 ARCH = mips
+SPU_ARCH=64
 
 # Configuration pathes
 BAIKAL_HOME   = ~/.baikal
@@ -25,7 +26,7 @@ ifeq (${DEBUG}, true)
 endif
 
 # Default targets
-default: $(DRIVER).ko $(TARGET)
+default: clean $(DRIVER).ko $(TARGET)
 all: default
 
 # Building SPU driver

@@ -176,14 +176,14 @@ struct gsid_container
 typedef struct gsid_container gsid_t;
 
 /* Key - Value pair container */
-struct pair
+struct pair_containter
 {
   key_t key;
-  value_t value;
+  val_t value;
 };
 
 /* Pair container hider */
-typedef struct pair pair_t;
+typedef struct pair_containter pair_t;
 
 
 

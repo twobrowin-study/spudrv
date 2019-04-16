@@ -17,7 +17,7 @@ ccflags-y   += ${COMPILER_FLAGS}
 
 PWD := ${shell pwd}
 
-$(BINARY).ko: clean
+$(BINARY).ko:
 	${MAKE} -C "${KERNEL_SOURCE}" SUBDIRS="${PWD}" ARCH="${ARCH}" CROSS_COMPILE="${CROSS_COMPILE}" $(TARGETS)
 
 clean:

@@ -27,4 +27,37 @@
 #include "fields.hpp"
 #include "structure.hpp"
 
+#include <string>
+
+namespace SPU
+{
+
+/* Convert GSID to string */
+std::string to_string(gsid_t gsid)
+{
+  char buf[100];
+  snprintf(buf, sizeof(buf), GSID_FORMAT, GSID_VAR(gsid));
+  return std::string(buf);
+}
+
+/* Convert data container to string */
+std::string to_string(struct data_container data)
+{
+  std::string ret;
+  for (u32 cont : data.cont)
+  {
+    char buf[100];
+    snprintf(buf, sizeof(buf), "0x%08x-", cont);
+    ret += buf;
+  }
+  return ret.substr(0, ret.size()-1);
+}
+
+std::string to_string(pair_t pair)
+{
+  return to_string(pair.key) + " : " + to_string(pair.value);
+}
+
+} /* namespace SPU */
+
 #endif /* LIBSPU_HPP */
