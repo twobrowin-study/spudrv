@@ -23,6 +23,7 @@
 #define LOG_OBJECT "command execution"
 
 #include <linux/slab.h>
+#include <linux/delay.h>
 
 #include "spu.h"
 #include "log.h"
@@ -36,12 +37,12 @@ static void adds(const void *res_buf);
 static int init_burst_w(struct pci_burst *pci_burst, u8 cmd, const void *cmd_buf);
 static int init_burst_r(struct pci_burst *pci_burst, u8 cmd);
 static int poll_spu(u8 reg, u8 shift, u8 *state);
-static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf, u8 spu_state);
+static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf, u8 spu_status);
 
 /* Commands execution in command workflow */
 size_t execute_cmd(const void *cmd_buf, const void **res_buf)
 {
-  u8 spu_state = 0;
+  u8 spu_state = 0, spu_status;
   size_t rslt_size = 0;
   
   struct pci_burst pci_burst_w =
@@ -115,24 +116,17 @@ size_t execute_cmd(const void *cmd_buf, const void **res_buf)
   if(GET_P_FLAG(cmd) == 1)
   {
     LOG_DEBUG("Polling operation finish");
-    if(poll_spu(STATE_REG_0, SPU_READY_FLAG, &spu_state) != 0)
+    spu_status = 0;
+    if(poll_spu(STATE_REG_0, SPU_READY_FLAG, &spu_status) != 0)
     {
       LOG_ERROR("SPU can not finish operation");
       return -ENOEXEC;
     }
     LOG_DEBUG("SPU finish operation");
 
-    /* Check if there was an error */
-    if(ERRORS(spu_state))
-    {
-      LOG_ERROR("Error occured: SPU State 0 = 0x%02x", spu_state);
-      RSLTFRMT_0(*res_buf)->rslt = ERRORS(spu_state);
-      return sizeof(struct rsltfrmt_0); // Return as format 0
-    }
-
     /* Read results */
     pci_burst_read(&pci_burst_r);
-    set_rsltfrmt(&pci_burst_r, cmd, *res_buf, spu_state);
+    set_rsltfrmt(&pci_burst_r, cmd, *res_buf, spu_status);
     LOG_DEBUG("Got results of operation");
   }
   else
@@ -513,10 +507,10 @@ static int init_burst_r(struct pci_burst *pci_burst, u8 cmd)
 /* Poll untill SPU is ready or there is no more attempts */
 static inline int poll_spu(u8 reg, u8 shift, u8 *state)
 {
-  u8 poll_delay, poll_attempts = 255;
+  u8 poll_attempts = 255;
   do
   {
-    for (poll_delay=0; poll_delay<0xff; poll_delay++);
+    msleep(1);
     if(poll_attempts == 0)
     {
       // Error return
@@ -533,7 +527,7 @@ static inline int poll_spu(u8 reg, u8 shift, u8 *state)
 }
 
 /* Set result output format */
-static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf, u8 spu_state)
+static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf, u8 spu_status)
 {
   u8 count = 0;
   u8 i;
@@ -548,16 +542,16 @@ static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_bu
   switch(PURE_CMD(cmd))
   {
     CASE_RSLTFRMT_1:
-      LOG_DEBUG("Set result for format 1");
-      RSLTFRMT_1(res_buf)->rslt = OK;
+      LOG_DEBUG("Set result for format 1 with status 0x%02x", ERRORS(spu_status));
+      RSLTFRMT_1(res_buf)->rslt = ERRORS(spu_status);
 
       /* Just a power */
       RSLTFRMT_1(res_buf)->power = pci_burst->data[count-1];
-      break;
+      return;
 
     CASE_RSLTFRMT_2:
-      LOG_DEBUG("Set result for format 2");
-      RSLTFRMT_2(res_buf)->rslt = OK;
+      LOG_DEBUG("Set result for format 2 with status 0x%02x", ERRORS(spu_status));
+      RSLTFRMT_2(res_buf)->rslt = ERRORS(spu_status);
 
       /* Initialize in loop key and value */
       for(i=0; i<SPU_WEIGHT; i++)
@@ -568,10 +562,10 @@ static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_bu
 
       /* Last one is a power */
       RSLTFRMT_2(res_buf)->power = pci_burst->data[count-1];
-      break;
+      return;
 
     default:
       LOG_ERROR("Could not set result");
-      break;
+      return;
   }
 }
