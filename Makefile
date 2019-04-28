@@ -3,14 +3,13 @@
 # Made by Dubrovin Egor <dubrovin.en@ya.ru>
 
 # Targets
-DRIVER  = spudrv
-LIBRARY = libspu
 TARGET  = test04
-OBJS    = test04.o
+LIBRARY = libspu
+DRIVER  = spudrv
 
 # Current arch
-ARCH = mips
-SPU_ARCH=64
+ARCH     = mips
+SPU_ARCH = 64
 
 # Configuration pathes
 BAIKAL_HOME   = ~/.baikal
@@ -26,30 +25,36 @@ ifeq (${DEBUG}, true)
 endif
 
 # Default targets
-default: clean $(DRIVER).ko $(TARGET)
+default: clean $(DRIVER).ko $(TARGET).out
 all: default
+
+# Building Target
+$(TARGET).out:
+	@echo "Building target $(TARGET)"
+	${MAKE} -C $(TARGET) GPP="${GPP}" COMPILER_FLAGS="${COMPILER_FLAGS}" LIBRARY="../${LIBRARY}"
 
 # Building SPU driver
 $(DRIVER).ko:
 	@echo "Building driver $(DRIVER)"
 	${MAKE} -C $(DRIVER) KERNEL_SOURCE="${KERNEL_SOURCE}" ARCH="${ARCH}" CROSS_COMPILE="${CROSS_COMPILE}" COMPILER_FLAGS="${COMPILER_FLAGS}"
 
-# Building target with SPU library support
-$(TARGET): $(OBJS)
-	@echo 'Building target: $@'
-	${GPP} ${COMPILER_FLAGS} -I$(LIBRARY) -o "$@" $(OBJS)
-
-# Building obj files
-%.o: %.cpp
-	@echo 'Building file: $<'
-	${GPP} ${COMPILER_FLAGS} -I$(LIBRARY) -c -o "$@" "$<"
-
 clean:
 	@echo "Cleaning Driver Kernel Module"
 	${MAKE} -C $(DRIVER) KERNEL_SOURCE="${KERNEL_SOURCE}" clean
 	@echo "Cleaning $(TARGET)"
-	$(RM) $(OBJS) $(TARGET)
+	${MAKE} -C $(TARGET) clean
 
-# Copy objects to Leonhard server after compile
+# Compile and copy to Leonhard server all object files
 srv-cp: default
-	@./cp_images_to_srv.sh
+	@./cp_images_to_srv.sh -d $(DRIVER) -t $(TARGET)
+	@./help_srv.sh $(DRIVER) $(TARGET)
+
+# Compile and copy to Leonhard server only driver
+srv-cp-$(DRIVER): clean $(DRIVER).out
+	@./cp_images_to_srv.sh -t $(DRIVER)
+	@./help_srv.sh $(DRIVER) $(TARGET)
+
+# Compile and copy to Leonhard server only target
+srv-cp-$(TARGET): clean $(TARGET).out
+	@./cp_images_to_srv.sh -t $(TARGET)
+	@./help_srv.sh $(DRIVER) $(TARGET)

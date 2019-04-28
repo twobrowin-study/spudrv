@@ -7,5 +7,10 @@
 *.mod.*
 *modules.order
 *Module.symvers
-*test04
 *.tmp_versions
+
+# Ignore special cpp OLD files
+*.old.cpp
+
+# Ignore all executable binaries tests
+test*/test*
