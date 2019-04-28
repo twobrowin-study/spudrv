@@ -50,17 +50,22 @@ public:
     commands with composite key
   *************************************/
 
-  rslt_t insert(FieldDataVector<KeyFieldNameType> fields_data_vector, value_t value, flags_t flags = NO_FLAGS)
+  u32 get_power()
+  {
+    return base.get_power();
+  }
+
+  status_t insert(FieldDataVector<KeyFieldNameType> fields_data_vector, value_t value, flags_t flags = NO_FLAGS)
   {
     return base.insert(key.compile(fields_data_vector), value, flags);
   }
 
-  rslt_t del(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  status_t del(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
   {
     return base.del(key.compile(fields_data_vector), flags);
   }
 
-  value_t search(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t search(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
   {
     return base.search(key.compile(fields_data_vector), flags);
   }

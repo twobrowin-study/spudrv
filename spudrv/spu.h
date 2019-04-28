@@ -147,7 +147,11 @@ enum rslt_mask
 ***************************************/
 typedef enum cmd cmd_t;
 typedef enum cmd_flag flags_t;
-typedef enum rslt rslt_t;
+typedef u32 rslt_t;
+
+#ifdef __cplusplus
+typedef u32 status_t; // Result rename to status only in C++
+#endif /* __cplusplus */
 
 // Macro to convert into command type
 #define CMD(cmd) ( (cmd_t) (cmd) )
@@ -183,15 +187,16 @@ struct gsid_container
 /* GSID container hider */
 typedef struct gsid_container gsid_t;
 
-/* Key - Value pair container */
+/* Key - Value pair container and hiders only in C++ */
+#ifdef __cplusplus
 struct pair_containter
 {
-  key_t key;
-  val_t value;
+  key_t    key;
+  value_t  value;
+  status_t status;
 };
-
-/* Pair container hider */
 typedef struct pair_containter pair_t;
+#endif /* __cplusplus */
 
 
 
@@ -291,6 +296,8 @@ typedef struct cmdfrmt_5 ls_cmd_t, lseq_cmd_t, gr_cmd_t, greq_cmd_t;
 typedef struct rsltfrmt_0 adds_rslt_t;
 typedef struct rsltfrmt_1 dels_rslt_t, ins_rslt_t, and_rslt_t, or_rslt_t, not_rslt_t, ls_rslt_t, lseq_rslt_t, gr_rslt_t, greq_rslt_t;
 typedef struct rsltfrmt_2 srch_rslt_t, del_rslt_t, min_rslt_t, max_rslt_t, next_rslt_t, prev_rslt_t, nsm_rslt_t, ngr_rslt_t;
+
+
 
 /* End of namespace SPU */
 #ifdef __cplusplus

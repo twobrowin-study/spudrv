@@ -46,9 +46,10 @@ private:
 public:
   BaseStructure();
   ~BaseStructure();
-  rslt_t insert(key_t key, value_t value, flags_t flags = NO_FLAGS);
-  rslt_t del(key_t key, flags_t flags = NO_FLAGS);
-  value_t search(key_t key, flags_t flags = P_FLAG);
+  u32 get_power();
+  status_t insert(key_t key, value_t value, flags_t flags = NO_FLAGS);
+  status_t del(key_t key, flags_t flags = NO_FLAGS);
+  pair_t search(key_t key, flags_t flags = P_FLAG);
   pair_t min(flags_t flags = P_FLAG);
   pair_t max(flags_t flags = P_FLAG);
   pair_t next(key_t key, flags_t flags = P_FLAG);
@@ -102,7 +103,13 @@ BaseStructure::~BaseStructure()
 }
 
 /* Insert command execution */
-rslt_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
+u32 BaseStructure::get_power()
+{
+  return this->power;
+}
+
+/* Insert command execution */
+status_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
 {
   /* Initialize INS command */
   ins_cmd_t ins =
@@ -123,7 +130,7 @@ rslt_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
 }
 
 /* Delete command execution */
-rslt_t BaseStructure::del(key_t key, flags_t flags)
+status_t BaseStructure::del(key_t key, flags_t flags)
 {
   /* Initialize INS command */
   del_cmd_t del =
@@ -143,7 +150,7 @@ rslt_t BaseStructure::del(key_t key, flags_t flags)
 }
 
 /* Search command execution */
-value_t BaseStructure::search(key_t key, flags_t flags)
+pair_t BaseStructure::search(key_t key, flags_t flags)
 {
   /* Initialize INS command */
   srch_cmd_t srch =
@@ -159,13 +166,7 @@ value_t BaseStructure::search(key_t key, flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return result.val;
+  return { result.key, result.val, result.rslt };
 }
 
 /* Min command execution */
@@ -184,13 +185,7 @@ pair_t BaseStructure::min(flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 /* Max command execution */
@@ -209,13 +204,7 @@ pair_t BaseStructure::max(flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 /* Next command execution */
@@ -235,13 +224,7 @@ pair_t BaseStructure::next(key_t key, flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 /* Previous command execution */
@@ -261,13 +244,7 @@ pair_t BaseStructure::prev(key_t key, flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 /* Next Smaler command execution */
@@ -287,13 +264,7 @@ pair_t BaseStructure::nsm(key_t key, flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 /* Next Greater command execution */
@@ -313,13 +284,7 @@ pair_t BaseStructure::ngr(key_t key, flags_t flags)
 
   power = result.power;
 
-  /* Check if any error */
-  if(result.rslt != OK)
-  {
-    return {0}; // Return zero at all fields and arrays
-  }
-
-  return { result.key, result.val };
+  return { result.key, result.val, result.rslt };
 }
 
 } /* namespace SPU */

@@ -53,40 +53,40 @@ std::string to_string(struct data_container data)
   return ret.substr(0, ret.size()-1);
 }
 
-/* Convert key : value pair into string */
-std::string to_string(pair_t pair)
-{
-  return to_string(pair.key) + " : " + to_string(pair.value);
-}
-
 /* Convert result into string */
-std::string to_string(rslt_t rslt)
+std::string to_string(status_t status)
 {
-  /* Check if rslt is OK */
-  if(rslt == OK)
+  /* Check if status is OK */
+  if(status == OK)
   {
     return "OK";
   }
 
   std::string ret;
 
-  /* If rslt is not OK find all parts */
-  if(rslt & ERR)
+  /* If status is not OK find all parts */
+  if(status & ERR)
   {
     ret += "ERR & ";
   }
 
-  if(rslt & QERR)
+  if(status & QERR)
   {
     ret += "QERR & ";
   }
 
-  if(rslt & OERR)
+  if(status & OERR)
   {
     ret += "OERR & ";
   }
 
   return ret.substr(0, ret.size()-3);
+}
+
+/* Convert key : value pair with status into string */
+std::string to_string(pair_t pair)
+{
+  return to_string(pair.status) + " : " + to_string(pair.key) + " : " + to_string(pair.value);
 }
 
 } /* namespace SPU */
