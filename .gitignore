@@ -14,4 +14,4 @@
 
 # Ignore all executable binaries tests
 test*/test*
-diikstra/diikstra
+dijkstra/dijkstra

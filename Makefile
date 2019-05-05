@@ -3,7 +3,7 @@
 # Made by Dubrovin Egor <dubrovin.en@ya.ru>
 
 # Targets
-TARGET  ?= test04
+TARGET  ?= dijkstra
 LIBRARY  = libspu
 DRIVER   = spudrv
 

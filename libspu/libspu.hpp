@@ -65,7 +65,8 @@ public:
      BitFlow operator-(BitFlow& other) { return (data_t) *this - (data_t) other; }
         u32& operator[](u8 idx)        { return d[idx]; }
   const u32& operator[](u8 idx) const  { return d[idx]; }
-             operator bool()           { return d[0]; }
+             operator bool()           { return (bool) d[0]; }
+             operator u8()             { return (u8) d[0]; }
 };
 
 
