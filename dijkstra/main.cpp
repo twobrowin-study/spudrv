@@ -97,7 +97,6 @@ int main()
     Q.del(Q_key);
     
     /* Get G_data from Q's "u" */
-    G.min(); // IDK but this made algorithm work
     G_data = G.search(u).value;
     Adj_u  = G_data["Adj[u]"];
     w_u    = G_data["w[u]"];
@@ -113,7 +112,6 @@ int main()
       {
         u8 v          = ex.name;
         auto G_data_v = G_data;            // Create new data fields for v node
-        G.min();                           // IDK but this made algorithm work
         G_data_v      = G.search(v).value; // Find v's data
 
         /* v is in Q */
@@ -122,7 +120,6 @@ int main()
           /* Delete old u∈Q */
           Q_key["u"]    = v;
           Q_key["d[u]"] = G_data_v["d[u]"];
-          Q.min(); // IDK but this made algorithm work
           Q.del(Q_key);
 
           /* Create new length statement */
@@ -150,8 +147,6 @@ int main()
 
     G_print();
     Q_print();
-
-    Q.min(); // IDK but this made algorithm work
 
     cout << "Turn" << endl;
   }
