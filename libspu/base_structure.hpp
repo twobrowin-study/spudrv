@@ -213,8 +213,6 @@ pair_t BaseStructure::min(flags_t flags)
 
   power = result.power;
 
-  std::cout << "Power is " << std::to_string(result.power) << std::endl;
-
   return { result.key, result.val, result.rslt };
 }
 
