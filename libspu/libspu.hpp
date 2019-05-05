@@ -52,6 +52,7 @@ public:
   BitFlow(void)        : d({0})    {}
   BitFlow(data_t data) : d(data)   {}
   BitFlow(u32 data)                { d[0] = (u32)data; d[1] = 0; }
+  BitFlow(bool data)               { d[0] = (u32)data; d[1] = 0; }
   BitFlow(short data)              { d[0] = (u32)data; d[1] = 0; }
   BitFlow(int data)                { d[0] = (u32)data; d[1] = 0; }
   BitFlow(long data)               { d[0] = (u32)data; d[1] = (u32)(data>>31)>>1; }
@@ -59,6 +60,12 @@ public:
   BitFlow(unsigned short data)     { d[0] = (u32)data; d[1] = 0; }
   BitFlow(unsigned long data)      { d[0] = (u32)data; d[1] = (u32)(data>>31)>>1; }
   BitFlow(unsigned long long data) { d[0] = (u32)data; d[1] = (u32)(data>>32); }
+
+     BitFlow operator+(BitFlow& other) { return (data_t) *this + (data_t) other; }
+     BitFlow operator-(BitFlow& other) { return (data_t) *this - (data_t) other; }
+        u32& operator[](u8 idx)        { return d[idx]; }
+  const u32& operator[](u8 idx) const  { return d[idx]; }
+             operator bool()           { return d[0]; }
 };
 
 

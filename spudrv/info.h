@@ -22,8 +22,8 @@
 #define INFO_H
 
 #define DRIVER_NAME        "spudrv"
-#define DRIVER_VERSION     "3.1"
-#define DRIVER_VERSION_NUM 0x31
+#define DRIVER_VERSION     "3.2"
+#define DRIVER_VERSION_NUM 0x32
 #define DRIVER_AUTHOR      "Dubrovin Egor <dubrovin.en@ya.ru>, Alex Popov <alexpopov@bmsru.ru>"
 #define DRIVER_COPYRIGHT   "Copyright (c) 2019 Dubrovin Egor, Alex Popov. Bauman Moscow State Technical University"
 #define DRIVER_DESCRIPTION "Leonhard SPU PCI Driver"

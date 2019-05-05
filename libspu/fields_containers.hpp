@@ -82,6 +82,9 @@ public: /* Constructors */
 template <typename NameT = u8>
 class FieldsLength : public FieldsContainer<NameT, u8>
 {
+  /* Friend */
+  friend class Fields<NameT>;
+  
 private:
   /* Content length types */
   typedef FieldsContainer<NameT, u8> Parent;
@@ -112,6 +115,9 @@ public:
 template <typename NameT = u8>
 class FieldsData  : public FieldsContainer<NameT, BitFlow>
 {
+  /* Friend */
+  friend class Fields<NameT>;
+  
 private:
   /* Content data types */
   typedef FieldsContainer<NameT, BitFlow> Parent;

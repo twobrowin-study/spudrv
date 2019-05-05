@@ -529,7 +529,7 @@ static inline int poll_spu(u8 reg, u8 shift, u8 *state)
 /* Set result output format */
 static void set_rsltfrmt(struct pci_burst *pci_burst, u8 cmd, const void *res_buf, u8 spu_status)
 {
-  u8 count = 0;
+  u8 count = pci_burst->count;
   u8 i;
 
   if(GET_P_FLAG(cmd) == 0)

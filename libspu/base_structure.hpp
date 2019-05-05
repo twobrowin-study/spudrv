@@ -28,6 +28,8 @@
 #include "fileops.hpp"
 #include "errors/could_not_create_structure.hpp"
 
+#include <vector>
+
 namespace SPU
 {
 
@@ -38,24 +40,32 @@ namespace SPU
 /* Structure in SPU */
 class BaseStructure
 {
+  struct InsertStruct
+  {
+    key_t   key;
+    value_t value;
+  };
+  using InsertVector = std::vector<InsertStruct>;
+
 private:
   gsid_t gsid = { 0 };       // Global Structure ID
   Fileops fops;              // File operations provider
   u32 power;                 // Current structure power
 
 public:
-  BaseStructure();
-  ~BaseStructure();
-  u32 get_power();
-  status_t insert(key_t key, value_t value, flags_t flags = NO_FLAGS);
-  status_t del(key_t key, flags_t flags = NO_FLAGS);
-  pair_t search(key_t key, flags_t flags = P_FLAG);
-  pair_t min(flags_t flags = P_FLAG);
-  pair_t max(flags_t flags = P_FLAG);
-  pair_t next(key_t key, flags_t flags = P_FLAG);
-  pair_t prev(key_t key, flags_t flags = P_FLAG);
-  pair_t nsm(key_t key, flags_t flags = P_FLAG);
-  pair_t ngr(key_t key, flags_t flags = P_FLAG);
+  BaseStructure   ();
+  ~BaseStructure  ();
+  u32 get_power   ();
+  status_t insert (key_t key, value_t value, flags_t flags = NO_FLAGS);
+  status_t insert (InsertVector insert_vector, flags_t flags = NO_FLAGS);
+  status_t del    (key_t key, flags_t flags = NO_FLAGS);
+  pair_t   search (key_t key, flags_t flags = P_FLAG);
+  pair_t   min    (flags_t flags = P_FLAG);
+  pair_t   max    (flags_t flags = P_FLAG);
+  pair_t   next   (key_t key, flags_t flags = P_FLAG);
+  pair_t   prev   (key_t key, flags_t flags = P_FLAG);
+  pair_t   nsm    (key_t key, flags_t flags = P_FLAG);
+  pair_t   ngr    (key_t key, flags_t flags = P_FLAG);
 };
 
 
@@ -133,6 +143,20 @@ status_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
   return result.rslt;
 }
 
+/* Mass vectorized insert command execution */
+status_t BaseStructure::insert(InsertVector insert_vector, flags_t flags)
+{
+  for(auto ex : insert_vector)
+  {
+    status_t status = insert(ex.key, ex.value, flags);
+    if(status != OK)
+    {
+      return status;
+    }
+  }
+  return OK;
+}
+
 /* Delete command execution */
 status_t BaseStructure::del(key_t key, flags_t flags)
 {
@@ -188,6 +212,8 @@ pair_t BaseStructure::min(flags_t flags)
   result = fops.execute<min_cmd_t, min_rslt_t>(min);
 
   power = result.power;
+
+  std::cout << "Power is " << std::to_string(result.power) << std::endl;
 
   return { result.key, result.val, result.rslt };
 }

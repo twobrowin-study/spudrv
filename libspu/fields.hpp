@@ -31,6 +31,8 @@ namespace SPU
 template <typename NameT = u8>
 class Fields
 {
+  using DataVector = typename FieldsData<NameT>::DataVector;
+
 private:
   FieldsLength<NameT> length;
   FieldsData<NameT> data;
@@ -65,6 +67,12 @@ public:
   Fields(FieldsLength<NameT> fields_length, FieldsData<NameT> fields_data) : length(fields_length), data(fields_data) {}
   Fields(FieldsLength<NameT> fields_length, BitFlow fields_data) : length(fields_length), data() { init_data(fields_data); }
 
+  /* Get data as std:vector */
+  DataVector vecData()
+  {
+    return data.cont_vec;
+  }
+
   /* data_t transform operator */
   operator data_t()
   {
@@ -72,10 +80,20 @@ public:
     u8 shift = 0;
     for(auto ex : length.cont_vec)
     {
-      ret = ret | (data[ex.name] << shift);
+      try
+      {
+        ret = ret | (data[ex.name] << shift);
+      }
+      catch(DidNotFoundDataByName<NameT>&) {}
       shift += ex.cont;
     }
     return ret;
+  }
+
+  /* BitFlow transform operator */
+  operator BitFlow()
+  {
+    return BitFlow( (data_t) *this );
   }
 
   Fields& operator= (BitFlow fields_data)

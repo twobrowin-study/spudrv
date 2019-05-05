@@ -174,6 +174,8 @@ struct data_container
   friend bool operator>= (const struct data_container &c1, const struct data_container &c2);
   friend bool operator<  (const struct data_container &c1, const struct data_container &c2);
   friend bool operator<= (const struct data_container &c1, const struct data_container &c2);
+  friend struct data_container operator+ (const struct data_container &c1, const struct data_container &c2);
+  friend struct data_container operator- (const struct data_container &c1, const struct data_container &c2);
   friend struct data_container operator& (const struct data_container &c1, const struct data_container &c2);
   friend struct data_container operator| (const struct data_container &c1, const struct data_container &c2);
   friend struct data_container operator<< (const struct data_container &cont, const u8 &shift);

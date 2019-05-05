@@ -92,6 +92,29 @@ bool operator<= (const data_t &c1, const data_t &c2)
   return (c1 < c2) | (c1 == c2);
 }
 
+
+/* Invokes operator for all array */
+data_t operator+ (const data_t &c1, const data_t &c2)
+{
+  data_t ret = {0};
+  for(u8 i=0; i<SPU_WEIGHT; i++)
+  {
+    ret[i] = c1[i] + c2[i];
+  }
+  return ret;
+}
+
+/* Invokes operator for all array */
+data_t operator- (const data_t &c1, const data_t &c2)
+{
+  data_t ret = {0};
+  for(u8 i=0; i<SPU_WEIGHT; i++)
+  {
+    ret[i] = c1[i] - c2[i];
+  }
+  return ret;
+}
+
 /* Invokes operator for all array */
 data_t operator& (const data_t &c1, const data_t &c2)
 {
