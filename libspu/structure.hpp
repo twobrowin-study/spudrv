@@ -22,7 +22,6 @@
 #ifndef STRUCTURE_HPP
 #define STRUCTURE_HPP
 
-#include "key.hpp"
 #include "libspu.hpp"
 #include "fields.hpp"
 #include "base_structure.hpp"
@@ -35,15 +34,15 @@ namespace SPU
 ***************************************/
 
 /* Template Structure class definition */
-template<typename KeyFieldNameType = void>
+template<typename NameT = void>
 class Structure
 {
 private:
   BaseStructure base;
-  Key<KeyFieldNameType> key;
+  FieldsLength<NameT> key_len;
 
 public:
-  Structure(FieldLengthVector<KeyFieldNameType> fields_length_vector) : base(), key(fields_length_vector) {}
+  Structure(FieldsLength<NameT> key_length) : base(), key_len(key_length) {}
 
   /*************************************
     Redefinitions of BaseStructure
@@ -55,19 +54,22 @@ public:
     return base.get_power();
   }
 
-  status_t insert(FieldDataVector<KeyFieldNameType> fields_data_vector, value_t value, flags_t flags = NO_FLAGS)
+  status_t insert(FieldsData<NameT> key_data, value_t value, flags_t flags = NO_FLAGS)
   {
-    return base.insert(key.compile(fields_data_vector), value, flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.insert(key, value, flags);
   }
 
-  status_t del(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = NO_FLAGS)
+  status_t del(FieldsData<NameT> key_data, flags_t flags = NO_FLAGS)
   {
-    return base.del(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.del(key, flags);
   }
 
-  pair_t search(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t search(FieldsData<NameT> key_data, flags_t flags = P_FLAG)
   {
-    return base.search(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.search(key, flags);
   }
 
   pair_t min(flags_t flags = P_FLAG)
@@ -80,24 +82,28 @@ public:
     return base.max(flags);
   }
 
-  pair_t next(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t next(FieldsData<NameT> key_data, flags_t flags = P_FLAG)
   {
-    return base.next(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.next(key, flags);
   }
 
-  pair_t prev(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t prev(FieldsData<NameT> key_data, flags_t flags = P_FLAG)
   {
-    return base.prev(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.prev(key, flags);
   }
 
-  pair_t nsm(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t nsm(FieldsData<NameT> key_data, flags_t flags = P_FLAG)
   {
-    return base.nsm(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.nsm(key, flags);
   }
 
-  pair_t ngr(FieldDataVector<KeyFieldNameType> fields_data_vector, flags_t flags = P_FLAG)
+  pair_t ngr(FieldsData<NameT> key_data, flags_t flags = P_FLAG)
   {
-    return base.ngr(key.compile(fields_data_vector), flags);
+    Fields<NameT> key(key_len, key_data);
+    return base.ngr(key, flags);
   }
 
 };

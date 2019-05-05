@@ -24,9 +24,9 @@
 #ifndef BASE_STRUCTURE_HPP
 #define BASE_STRUCTURE_HPP
 
-#include "spu.h"
 #include "libspu.hpp"
 #include "fileops.hpp"
+#include "errors/could_not_create_structure.hpp"
 
 namespace SPU
 {
@@ -71,7 +71,7 @@ BaseStructure::BaseStructure() :
   /* Initialize ADDS command */
   adds_cmd_t adds =
   {
-    .cmd = CMD(ADDS | P_FLAG)
+    .cmd = ADDS | P_FLAG
   };
   adds_rslt_t result;
 
@@ -83,6 +83,10 @@ BaseStructure::BaseStructure() :
     /* Create GSID */
     gsid = result.gsid;
   }
+  else
+  {
+    throw CouldNotCreateStructure();
+  }
 }
 
 /* Destructor witch DELS SPU structure */
@@ -91,7 +95,7 @@ BaseStructure::~BaseStructure()
   /* Initialize DELS command */
   dels_cmd_t dels =
   {
-    .cmd  = CMD(DELS | P_FLAG),
+    .cmd  = DELS | P_FLAG,
     .gsid = gsid
   };
   dels_rslt_t result;
@@ -114,7 +118,7 @@ status_t BaseStructure::insert(key_t key, value_t value, flags_t flags)
   /* Initialize INS command */
   ins_cmd_t ins =
   {
-    .cmd  = CMD(INS | flags),
+    .cmd  = (cmd_t) ( INS | flags ),
     .gsid = gsid,
     .key  = key,
     .val  = value
@@ -135,7 +139,7 @@ status_t BaseStructure::del(key_t key, flags_t flags)
   /* Initialize INS command */
   del_cmd_t del =
   {
-    .cmd  = CMD(DEL | flags),
+    .cmd  = (cmd_t) ( DEL | flags ),
     .gsid = gsid,
     .key  = key
   };
@@ -155,7 +159,7 @@ pair_t BaseStructure::search(key_t key, flags_t flags)
   /* Initialize INS command */
   srch_cmd_t srch =
   {
-    .cmd  = CMD(SRCH | flags),
+    .cmd  = (cmd_t) ( SRCH | flags ),
     .gsid = gsid,
     .key  = key
   };
@@ -175,7 +179,7 @@ pair_t BaseStructure::min(flags_t flags)
   /* Initialize INS command */
   min_cmd_t min =
   {
-    .cmd  = CMD(MIN | flags),
+    .cmd  = (cmd_t) ( MIN | flags ),
     .gsid = gsid
   };
   min_rslt_t result;
@@ -194,7 +198,7 @@ pair_t BaseStructure::max(flags_t flags)
   /* Initialize INS command */
   max_cmd_t max =
   {
-    .cmd  = CMD(MAX | flags),
+    .cmd  = (cmd_t) ( MAX | flags ),
     .gsid = gsid
   };
   max_rslt_t result;
@@ -213,7 +217,7 @@ pair_t BaseStructure::next(key_t key, flags_t flags)
   /* Initialize INS command */
   next_cmd_t next =
   {
-    .cmd  = CMD(NEXT | flags),
+    .cmd  = (cmd_t) ( NEXT | flags ),
     .gsid = gsid,
     .key = key
   };
@@ -233,7 +237,7 @@ pair_t BaseStructure::prev(key_t key, flags_t flags)
   /* Initialize INS command */
   prev_cmd_t prev =
   {
-    .cmd  = CMD(PREV | flags),
+    .cmd  = (cmd_t) ( PREV | flags ),
     .gsid = gsid,
     .key = key
   };
@@ -253,7 +257,7 @@ pair_t BaseStructure::nsm(key_t key, flags_t flags)
   /* Initialize INS command */
   nsm_cmd_t nsm =
   {
-    .cmd  = CMD(NSM | flags),
+    .cmd  = (cmd_t) ( NSM | flags ),
     .gsid = gsid,
     .key = key
   };
@@ -273,7 +277,7 @@ pair_t BaseStructure::ngr(key_t key, flags_t flags)
   /* Initialize INS command */
   ngr_cmd_t ngr =
   {
-    .cmd  = CMD(NGR | flags),
+    .cmd  = (cmd_t) ( NGR | flags ),
     .gsid = gsid,
     .key = key
   };

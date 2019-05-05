@@ -1,8 +1,9 @@
 /*
   libspu.hpp
-        - SPU library to include file
-        - simultaneously c++ and pure c header
+        - main SPU library include file
         - file defines containers for key and value data and some more type hiders
+        - file presents BitFlow class
+        - have all need to_string convertors
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -24,13 +25,43 @@
 #define LIBSPU_HPP
 
 #include "spu.h"
-#include "fields.hpp"
-#include "structure.hpp"
+#include "data_container_operators.hpp"
 
 #include <string>
 
 namespace SPU
 {
+
+/* SPU key-value pair with SPU's status type */
+struct pair_containter
+{
+  key_t    key;
+  value_t  value;
+  status_t status;
+};
+typedef struct pair_containter pair_t;
+
+/* Class providing bit flow from any type */
+class BitFlow
+{
+private:
+  data_t d;
+
+public:
+  operator data_t() const          { return d; }
+  BitFlow(void)        : d({0})    {}
+  BitFlow(data_t data) : d(data)   {}
+  BitFlow(u32 data)                { d[0] = (u32)data; d[1] = 0; }
+  BitFlow(short data)              { d[0] = (u32)data; d[1] = 0; }
+  BitFlow(int data)                { d[0] = (u32)data; d[1] = 0; }
+  BitFlow(long data)               { d[0] = (u32)data; d[1] = (u32)(data>>31)>>1; }
+  BitFlow(long long data)          { d[0] = (u32)data; d[1] = (u32)(data>>32); }
+  BitFlow(unsigned short data)     { d[0] = (u32)data; d[1] = 0; }
+  BitFlow(unsigned long data)      { d[0] = (u32)data; d[1] = (u32)(data>>31)>>1; }
+  BitFlow(unsigned long long data) { d[0] = (u32)data; d[1] = (u32)(data>>32); }
+};
+
+
 
 /* Convert GSID to string */
 std::string to_string(gsid_t gsid)
@@ -41,13 +72,22 @@ std::string to_string(gsid_t gsid)
 }
 
 /* Convert data container to string */
-std::string to_string(struct data_container data)
+std::string to_string(struct data_container data, bool hex = false)
 {
   std::string ret;
-  for (u32 cont : data.cont)
+  for(u8 i=1; i<SPU_WEIGHT+1; i++)
   {
     char buf[100];
-    snprintf(buf, sizeof(buf), "0x%08x-", cont);
+
+    if(hex)
+    {
+      snprintf(buf, sizeof(buf), "0x%08x-", data[SPU_WEIGHT-i]);
+    }
+    else // Decimal
+    {
+      snprintf(buf, sizeof(buf), "%d-", data[SPU_WEIGHT-i]);
+    }
+    
     ret += buf;
   }
   return ret.substr(0, ret.size()-1);
@@ -84,9 +124,9 @@ std::string to_string(status_t status)
 }
 
 /* Convert key : value pair with status into string */
-std::string to_string(pair_t pair)
+std::string to_string(pair_t pair, bool hex = false)
 {
-  return to_string(pair.status) + " : " + to_string(pair.key) + " : " + to_string(pair.value);
+  return to_string(pair.status) + " : " + to_string(pair.key, hex) + " : " + to_string(pair.value, hex);
 }
 
 } /* namespace SPU */

@@ -3,9 +3,9 @@
 # Made by Dubrovin Egor <dubrovin.en@ya.ru>
 
 # Targets
-TARGET  = test04
-LIBRARY = libspu
-DRIVER  = spudrv
+TARGET  ?= test04
+LIBRARY  = libspu
+DRIVER   = spudrv
 
 # Current arch
 ARCH     = mips

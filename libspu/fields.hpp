@@ -1,6 +1,6 @@
 /*
   fields.hpp
-        - declaration for Key class necessaryry types
+        - declaration of class necessary for data_t fields split
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
                   Alex Popov <alexpopov@bmsru.ru>
@@ -21,36 +21,80 @@
 #ifndef FIELDS_HPP
 #define FIELDS_HPP
 
-#include "spu.h"
-
-#include <vector>
+#include "libspu.hpp"
+#include "fields_containers.hpp"
 
 namespace SPU
 {
 
-/* Container for fields length definitions */
-template <typename NameType>
-struct FieldLength
+/* Fields splited data_t */
+template <typename NameT = u8>
+class Fields
 {
-  NameType name;
-  u8 length; // Max length for one field is 255
+private:
+  FieldsLength<NameT> length;
+  FieldsData<NameT> data;
+
+  /* Pure data initializer */
+  void init_data()
+  {
+    data = FieldsData<NameT>();
+    for(auto ex : length.cont_vec)
+    {
+      data.cont_vec.push_back({ex.name, BitFlow()});
+    }
+  }
+
+  /* Data initializer from data_t */
+  void init_data(data_t fields_data)
+  {
+    data = FieldsData<NameT>();
+    u8 shift = 0;
+    for(auto ex : length.cont_vec)
+    {
+      data_t mask = length.mask(ex.cont);
+      BitFlow flow( (fields_data >> shift) & mask );
+      data.cont_vec.push_back({ex.name, flow});
+      shift += ex.cont;
+    }
+  }
+
+public:
+  /* Constructors */
+  Fields(FieldsLength<NameT> fields_length) : length(fields_length), data() { init_data(); }
+  Fields(FieldsLength<NameT> fields_length, FieldsData<NameT> fields_data) : length(fields_length), data(fields_data) {}
+  Fields(FieldsLength<NameT> fields_length, BitFlow fields_data) : length(fields_length), data() { init_data(fields_data); }
+
+  /* data_t transform operator */
+  operator data_t()
+  {
+    data_t ret = {0};
+    u8 shift = 0;
+    for(auto ex : length.cont_vec)
+    {
+      ret = ret | (data[ex.name] << shift);
+      shift += ex.cont;
+    }
+    return ret;
+  }
+
+  Fields& operator= (BitFlow fields_data)
+  {
+    init_data(fields_data);
+    return *this;
+  }
+
+  Fields& operator= (FieldsData<NameT> fields_data)
+  {
+    data = fields_data;
+    return *this;
+  }
+
+  /* Subscript operators */
+  const BitFlow& operator[](NameT name) const { return data[name]; }
+        BitFlow& operator[](NameT name)       { return data[name]; }
+
 };
-
-/* Vector for field length definitions */
-template <typename NameType>
-using FieldLengthVector = std::vector < FieldLength<NameType> >;
-
-/* Container for fields data definitions */
-template <typename NameType>
-struct FieldData
-{
-  NameType name;
-  u32 data; // Max data for one field is 32 bits
-};
-
-/* Vector for fields data definitions */
-template <typename NameType>
-using FieldDataVector = std::vector < FieldData<NameType> >;
 
 } /* namespace SPU */
 

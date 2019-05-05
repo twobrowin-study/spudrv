@@ -145,16 +145,13 @@ enum rslt_mask
 /***************************************
   Enumerator hiders
 ***************************************/
-typedef enum cmd cmd_t;
-typedef enum cmd_flag flags_t;
-typedef u32 rslt_t;
+typedef u8 cmd_t;
+typedef u8 flags_t;
+typedef u8 rslt_t;
 
 #ifdef __cplusplus
-typedef u32 status_t; // Result rename to status only in C++
+typedef rslt_t status_t; // Result rename to status only in C++
 #endif /* __cplusplus */
-
-// Macro to convert into command type
-#define CMD(cmd) ( (cmd_t) (cmd) )
 
 
 
@@ -166,16 +163,35 @@ typedef u32 status_t; // Result rename to status only in C++
 struct data_container
 {
   u32 cont[SPU_WEIGHT];
+
+/* When compiling C++ add some operators */
+#ifdef __cplusplus
+        u32& operator[](u8 idx)       { return cont[idx]; }
+  const u32& operator[](u8 idx) const { return cont[idx]; }
+  friend bool operator== (const struct data_container &c1, const struct data_container &c2);
+  friend bool operator!= (const struct data_container &c1, const struct data_container &c2);
+  friend bool operator>  (const struct data_container &c1, const struct data_container &c2);
+  friend bool operator>= (const struct data_container &c1, const struct data_container &c2);
+  friend bool operator<  (const struct data_container &c1, const struct data_container &c2);
+  friend bool operator<= (const struct data_container &c1, const struct data_container &c2);
+  friend struct data_container operator& (const struct data_container &c1, const struct data_container &c2);
+  friend struct data_container operator| (const struct data_container &c1, const struct data_container &c2);
+  friend struct data_container operator<< (const struct data_container &cont, const u8 &shift);
+  friend struct data_container operator>> (const struct data_container &cont, const u8 &shift);
+#endif
 };
 
 /* Container hiders */
 typedef struct data_container spu_key_t; // Defined as SPU's to reduce conflict with kernel's key_t
 typedef struct data_container val_t;
 
+/* Container hiders in C++ */
 #ifdef __cplusplus
+typedef struct data_container data_t;
 typedef struct data_container key_t; // In C++ defined inside namespace
 typedef struct data_container value_t; // In C++ prefered full names
 #endif /* __cplusplus */
+
 
 
 /* Structure container for SPU key and value data */
@@ -186,18 +202,6 @@ struct gsid_container
 
 /* GSID container hider */
 typedef struct gsid_container gsid_t;
-
-/* Key - Value pair container and hiders only in C++ */
-#ifdef __cplusplus
-struct pair_containter
-{
-  key_t    key;
-  value_t  value;
-  status_t status;
-};
-typedef struct pair_containter pair_t;
-#endif /* __cplusplus */
-
 
 
 /***************************************
