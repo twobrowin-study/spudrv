@@ -15,3 +15,6 @@
 # Ignore all executable binaries tests
 test*/test*
 dijkstra/dijkstra
+
+# Ignore all doxygen-generated dirs
+doc

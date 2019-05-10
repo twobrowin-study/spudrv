@@ -3,7 +3,7 @@
         - simple logger
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
-                  Alex Popov <alexpopov@bmsru.ru>
+                  Alex Popov <alexpopov@bmstu.ru>
                   Bauman Moscow State Technical University
 
   Copyright 2017  Oleg Kutkov <elenbert@gmail.com>

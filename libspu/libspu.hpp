@@ -6,7 +6,7 @@
         - have all need to_string convertors
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
-                  Alex Popov <alexpopov@bmsru.ru>
+                  Alex Popov <alexpopov@bmstu.ru>
                   Bauman Moscow State Technical University
 
   This program is free software: you can redistribute it and/or modify
