@@ -8,13 +8,3 @@
 *modules.order
 *Module.symvers
 *.tmp_versions
-
-# Ignore special cpp OLD files
-*.old.cpp
-
-# Ignore all executable binaries tests
-test*/test*
-dijkstra/dijkstra
-
-# Ignore all doxygen-generated dirs
-doc
