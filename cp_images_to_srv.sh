@@ -16,12 +16,6 @@ do
       scp $DRIVER_NAME/$DRIVER_NAME.ko $SSH_USER:~/tftpboot/
       ;;
 
-    "-t")
-      TEST_NAME=$2
-      echo "Copy program file $TEST_NAME"
-      scp $TEST_NAME/$TEST_NAME $SSH_USER:~/tftpboot/
-      ;;
-
     "-b")
       echo "Copy Baikal MIPS system files"
       scp $BAIKAL_SDK/img/bfkx.vmlinux.bin $SSH_USER:~/tftpboot/
