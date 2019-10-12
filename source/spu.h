@@ -3,6 +3,7 @@
         - include with main macros and definitions of libspu and spudrv API project
 
   Copyright 2019  Dubrovin Egor <dubrovin.en@ya.ru>
+                  Aleksandr Kiryanenko <akiryanenko@mail.ru>
                   Alex Popov <alexpopov@bmstu.ru>
                   Bauman Moscow State Technical University
   
@@ -20,6 +21,8 @@
 
 #ifndef SPU_H
 #define SPU_H
+
+
 
 /* Use namespace only when compiling C++ */
 #ifdef __cplusplus
@@ -44,21 +47,22 @@ typedef unsigned char u8;
 /* Macro to get right SPU Character Device name */
 #define SPU_CDEV_NAME "spu"
 
-/* Macros of unsigned int's in one SPU data/key unit */
+/* Macros of unsigned int's in one SPU key/value unit */
+/* key/value is Little-endian array of bytes */
 #ifdef SPU32
-    #define SPU_WEIGHT 1
-#endif
-#ifdef SPU64
-    #define SPU_WEIGHT 2
-#endif
-#ifdef SPU128
     #define SPU_WEIGHT 4
 #endif
-#ifdef SPU256
+#ifdef SPU64
     #define SPU_WEIGHT 8
 #endif
+#ifdef SPU128
+    #define SPU_WEIGHT 16
+#endif
+#ifdef SPU256
+    #define SPU_WEIGHT 32
+#endif
 
-// Global Structure IDentifier weight in 32-bit words
+/* Global Structure IDentifier weight in 32-bit words */
 #define GSID_WEIGHT 4
 
 /* Macro to print structure GSID */
@@ -69,7 +73,7 @@ typedef unsigned char u8;
     (var).cont[0], (var).cont[1], (var).cont[2], (var).cont[3]
 #endif
 
-// Number of structures in SPU memory
+/* Number of structures in SPU memory */
 #define SPU_STR_NUM 7
 
 
@@ -162,25 +166,31 @@ typedef rslt_t status_t; // Result rename to status only in C++
 /* Structure container for SPU key and value data */
 struct data_container
 {
-  u32 cont[SPU_WEIGHT];
+  u8 cont[SPU_WEIGHT];
 
 /* When compiling C++ add some operators */
 #ifdef __cplusplus
-        u32& operator[](u8 idx)       { return cont[idx]; }
-  const u32& operator[](u8 idx) const { return cont[idx]; }
-  friend bool operator== (const struct data_container &c1, const struct data_container &c2);
-  friend bool operator!= (const struct data_container &c1, const struct data_container &c2);
-  friend bool operator>  (const struct data_container &c1, const struct data_container &c2);
-  friend bool operator>= (const struct data_container &c1, const struct data_container &c2);
-  friend bool operator<  (const struct data_container &c1, const struct data_container &c2);
-  friend bool operator<= (const struct data_container &c1, const struct data_container &c2);
-  friend struct data_container operator+ (const struct data_container &c1, const struct data_container &c2);
-  friend struct data_container operator- (const struct data_container &c1, const struct data_container &c2);
-  friend struct data_container operator& (const struct data_container &c1, const struct data_container &c2);
-  friend struct data_container operator| (const struct data_container &c1, const struct data_container &c2);
-  friend struct data_container operator<< (const struct data_container &cont, const u8 &shift);
-  friend struct data_container operator>> (const struct data_container &cont, const u8 &shift);
-#endif
+
+  /* Constructors */
+  data_container()                    { set(0);    }
+  data_container(u8 data[SPU_WEIGHT]) { set(data); }
+  template <typename T>
+  data_container(T data)              { set(data); }
+
+  /* Set data template method */
+  template <typename T>
+  void set(T data)
+  {
+    auto data_size = sizeof(data);
+    auto bytes_cnt = data_size < SPU_WEIGHT ? data_size : SPU_WEIGHT;
+    std::memset(&cont, 0, SPU_WEIGHT);
+    std::memcpy(&cont, &data, bytes_cnt);
+  }
+
+  /* Get content operator */
+        u8& operator[](u8 idx)       { return cont[idx]; }
+  const u8& operator[](u8 idx) const { return cont[idx]; }
+#endif /* __cplusplus */
 };
 
 /* Container hiders */
@@ -200,10 +210,18 @@ typedef struct data_container value_t; // In C++ prefered full names
 struct gsid_container
 {
   u32 cont[GSID_WEIGHT];
+
+/* Operators for C++ */
+#ifdef __cplusplus
+        u32& operator[](u8 idx)       { return cont[idx]; }
+  const u32& operator[](u8 idx) const { return cont[idx]; }
+  operator u32()                      { return cont[0]; } // Used for simulator
+#endif /* __cplusplus */
 };
 
 /* GSID container hider */
 typedef struct gsid_container gsid_t;
+
 
 
 /***************************************
