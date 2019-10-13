@@ -50,16 +50,16 @@ typedef unsigned char u8;
 /* Macros of unsigned int's in one SPU key/value unit */
 /* key/value is Little-endian array of bytes */
 #ifdef SPU32
-    #define SPU_WEIGHT 4
+    #define SPU_WEIGHT 1
 #endif
 #ifdef SPU64
-    #define SPU_WEIGHT 8
+    #define SPU_WEIGHT 2
 #endif
 #ifdef SPU128
-    #define SPU_WEIGHT 16
+    #define SPU_WEIGHT 4
 #endif
 #ifdef SPU256
-    #define SPU_WEIGHT 32
+    #define SPU_WEIGHT 8
 #endif
 
 /* Global Structure IDentifier weight in 32-bit words */
@@ -166,16 +166,16 @@ typedef rslt_t status_t; // Result rename to status only in C++
 /* Structure container for SPU key and value data */
 struct data_container
 {
-  u8 cont[SPU_WEIGHT];
+  u32 cont[SPU_WEIGHT];
 
 /* When compiling C++ add some operators */
 #ifdef __cplusplus
 
   /* Constructors */
-  data_container()                    { set(0);    }
-  data_container(u8 data[SPU_WEIGHT]) { set(data); }
+  data_container()                     { set(0);    }
+  data_container(u32 data[SPU_WEIGHT]) { set(data); }
   template <typename T>
-  data_container(T data)              { set(data); }
+  data_container(T data)               { set(data); }
 
   /* Set data template method */
   template <typename T>
@@ -188,8 +188,8 @@ struct data_container
   }
 
   /* Get content operator */
-        u8& operator[](u8 idx)       { return cont[idx]; }
-  const u8& operator[](u8 idx) const { return cont[idx]; }
+        u32& operator[](u8 idx)       { return cont[idx]; }
+  const u32& operator[](u8 idx) const { return cont[idx]; }
 #endif /* __cplusplus */
 };
 
